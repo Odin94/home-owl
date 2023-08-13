@@ -18,9 +18,10 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 # Used tech
 * [T3 Stack](https://create.t3.gg/) / `create-t3-app` to initialize project
 * [[Planetscale](https://planetscale.com) for database
-  * Prisma ORM (`npx prisma studio`)
+  * Prisma ORM (`npx prisma studio`, `npx prisma db push`)
 * [Vercel](vercel.com) for deployment
-
+* [Clerk](https://clerk.com) for auth
+  * Next-auth
 
 # Create T3 App
 
