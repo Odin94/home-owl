@@ -15,6 +15,13 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
   -->
 
 
+# Used tech
+* [T3 Stack](https://create.t3.gg/) / `create-t3-app` to initialize project
+* [[Planetscale](https://planetscale.com) for database
+  * Prisma ORM (`npx prisma studio`)
+* [Vercel](vercel.com) for deployment
+
+
 # Create T3 App
 
 This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
