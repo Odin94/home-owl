@@ -7,6 +7,8 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 
 
 <!-- Notes to self
+* Stopped here: https://youtu.be/YkOSUVzOAA4?t=1396  (run npx prisma db push against awake DB)
+
 * Find a hosted database service (maybe supabase?) with automated backups
   * https://www.prisma.io/docs/guides/database/supabase
   * https://authjs.dev/reference/adapter/supabase
