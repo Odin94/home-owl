@@ -40,6 +40,18 @@ export const api = createTRPCNext<AppRouter>({
         }),
         httpBatchLink({
           url: `${getBaseUrl()}/api/trpc`,
+          // Send cookies cross-origin https://trpc.io/docs/client/cors
+          fetch(url, options) {
+            return fetch(url, {
+              ...options,
+              credentials: 'include',
+            });
+          },
+          async headers() {
+            return {
+
+            }
+          }
         }),
       ],
     };
