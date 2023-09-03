@@ -1,11 +1,11 @@
 import { createServerSideHelpers } from '@trpc/react-query/server';
-import Head from "next/head";
-import { LoadingPage } from "~/components/LoadingSpinner";
+import Head from 'next/head';
+import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next/types';
+import superjson from "superjson";
+import { PageLayout } from '~/components/layout';
 import { appRouter } from '~/server/api/root';
 import { prisma } from '~/server/db';
 import { api } from "~/utils/api";
-import superjson from "superjson";
-import { GetServerSidePropsContext, GetStaticProps, InferGetServerSidePropsType, NextPage } from 'next/types';
 
 
 const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProps>,) => {
@@ -18,12 +18,12 @@ const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProp
 
     return (
         <>
-            {/* <Head>
-                <title></title>
-            </Head> */}
-            <main className="flex justify-center h-screen">
-                <div>{data?.name}</div>
-            </main>
+            <Head>
+                <title>{data.name} - Home Owl</title>
+            </Head>
+            <PageLayout>
+                <div>{data.name}</div>
+            </PageLayout>
         </>
     );
 }

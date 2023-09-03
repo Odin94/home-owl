@@ -11,6 +11,7 @@ import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import Link from "next/link";
+import { PageLayout } from "~/components/layout";
 
 dayjs.extend(relativeTime);
 
@@ -116,20 +117,18 @@ export default function Home() {
         <meta name="description" content="Keep a watchful eye on your chores!" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className="flex justify-center h-screen">
-        <div className="md:max-w-2xl w-full h-full border-x border-slate-400">
-          <div className="flex border-b border-slate-400 p-4">
-            {isSignedIn
-              ? <div className="flex justify-center">
-                <CreatePostWizard />
-                <SignOutButton />
-              </div>
-              : <SignInButton />
-            }
-          </div>
-          <Feed />
+      <PageLayout>
+        <div className="flex border-b border-slate-400 p-4">
+          {isSignedIn
+            ? <div className="flex justify-center">
+              <CreatePostWizard />
+              <SignOutButton />
+            </div>
+            : <SignInButton />
+          }
         </div>
-      </main>
+        <Feed />
+      </PageLayout>
     </>
   );
 }
