@@ -7,7 +7,7 @@
  * need to use are documented accordingly near the end.
  */
 
-import { getAuth } from "@clerk/nextjs/dist/types/server";
+import { getAuth } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
 import { type Session } from "next-auth";
@@ -37,12 +37,15 @@ interface CreateContextOptions {
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
   const { req, res } = opts;
 
-
-  // Get the session from the server using the getServerSession wrapper function
+  // Get the session from the server using the getServerSession wrapper function; at least in theory
+  // in praxis I always get null from this, so I'm using this: https://github.com/t3dotgg/chirp/blob/d5215364b3f4ab82d839b4ae6e599314363c609b/src/server/api/trpc.ts#L27 (see "sesh")
   const session = await getServerAuthSession({ req, res });
 
+  const sesh = getAuth(req);
+
   return {
-    session: session,
+    userId: sesh.userId,
+    // session: session,
     prisma,
   };
 };
@@ -94,13 +97,26 @@ export const publicProcedure = t.procedure;
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  if (!ctx.session?.user) {
-    throw new TRPCError({ code: "UNAUTHORIZED" });
+  // Session isn't working for me (see comment above in 'createTRPCContext')
+  // if (!ctx.session?.user) {
+  //   console.log({ ctx })
+  //   throw new TRPCError({ code: "UNAUTHORIZED" });
+  // }
+  // return next({
+  //   ctx: {
+  //     // infers the `session` as non-nullable
+  //     session: { ...ctx.session, user: ctx.session.user },
+  //   },
+  // });
+  if (!ctx.userId) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+    });
   }
+
   return next({
     ctx: {
-      // infers the `session` as non-nullable
-      session: { ...ctx.session, user: ctx.session.user },
+      userId: ctx.userId,
     },
   });
 });

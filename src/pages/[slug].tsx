@@ -32,7 +32,7 @@ const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProp
 export const getServerSideProps = async (context: GetServerSidePropsContext<{ slug: string }>) => {
     const helpers = createServerSideHelpers({
         router: appRouter,
-        ctx: { prisma, session: null },
+        ctx: { prisma, userId: null },
         transformer: superjson,
     })
 
