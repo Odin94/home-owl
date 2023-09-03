@@ -4,6 +4,7 @@ import { type AppType } from "next/app";
 import { api } from "~/utils/api";
 import "~/styles/globals.css";
 import { ClerkProvider } from "@clerk/nextjs";
+import { Toaster } from "react-hot-toast";
 
 const MyApp: AppType<{ session: Session | null }> = ({
   Component,
@@ -12,6 +13,7 @@ const MyApp: AppType<{ session: Session | null }> = ({
   return (
     <SessionProvider session={session}>
       <ClerkProvider {...pageProps}>
+        <Toaster position="bottom-center" />
         <Component {...pageProps} />
       </ClerkProvider>
     </SessionProvider>

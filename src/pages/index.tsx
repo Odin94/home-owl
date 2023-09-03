@@ -9,6 +9,7 @@ import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
 import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner";
 import { useState } from "react";
+import toast from "react-hot-toast";
 
 dayjs.extend(relativeTime);
 
@@ -25,7 +26,13 @@ const CreatePostWizard = () => {
       void ctx.posts.getAllWithAuthor.invalidate()
     },
     onError: (err: any) => {
+      const errorMessage = err.data?.zodError?.fieldErrors?.content
       console.log(err)
+      if (errorMessage) {
+        toast.error(errorMessage[0])
+      } else {
+        toast.error("Failed to post! Please try again.")
+      }
     }
   });
 
@@ -37,9 +44,21 @@ const CreatePostWizard = () => {
 
       <input type="text" placeholder="Type something funny!" className="bg-transparent grow outline-none"
         value={input} onChange={(e) => setInput(e.target.value)} disabled={isPosting}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault()
+            if (input !== "") {
+              void mutate({ content: input })
+            }
+          }
+        }}
       />
 
-      <button onClick={() => mutate({ content: input })} className="">Post</button>
+      {input !== "" && !isPosting
+        ? <button onClick={() => mutate({ content: input })} className="">Post</button>
+        : null}
+
+      {isPosting ? <CeneteredLoadingSpinner size={20} /> : null}
     </div>
   );
 };
