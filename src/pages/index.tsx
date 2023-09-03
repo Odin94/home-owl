@@ -1,19 +1,13 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
-import { api, type RouterOutputs } from "~/utils/api";
-
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
-import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
 import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner";
+import PostView from "~/components/PostView";
 import { PageLayout } from "~/components/layout";
-
-dayjs.extend(relativeTime);
+import { api } from "~/utils/api";
 
 const CreatePostWizard = () => {
   const { user } = useUser();
@@ -25,7 +19,7 @@ const CreatePostWizard = () => {
   const { mutate, isLoading: isPosting, } = api.posts.create.useMutation({
     onSuccess: () => {
       setInput("")
-      void ctx.posts.getAllWithAuthor.invalidate()
+      void ctx.posts.getAll.invalidate()
     },
     onError: (err: any) => {
       const errorMessage = err.data?.zodError?.fieldErrors?.content
@@ -65,29 +59,8 @@ const CreatePostWizard = () => {
   );
 };
 
-type PostWithAuthor = RouterOutputs["posts"]["getAllWithAuthor"][number];
-
-const PostView = ({ post, author }: PostWithAuthor) => {
-  return (
-    <div className="flex p-4 border-b border-slate-400 gap-3" key={post.id}>
-      <Image src={author.imageUrl} width={56} height={56} className="rounded-full" alt="post author profile picture" />
-      <div className="flex flex-col">
-        <div className="flex gap-1 text-slate-300">
-          <Link href={`/@${author.name}`}>
-            <span>{`@${author.name} `}</span>
-          </Link>
-          <Link href={`/post/${post.id}`}>
-            <span className="font-thin">{` - ${dayjs(post.createdAt).fromNow()}`}</span>
-          </Link>
-        </div>
-        <span className="text-2xl">{post.content}</span>
-      </div>
-    </div>
-  )
-}
-
 const Feed = () => {
-  const { data, isLoading } = api.posts.getAllWithAuthor.useQuery();
+  const { data, isLoading } = api.posts.getAll.useQuery();
 
   if (isLoading) return <CeneteredLoadingSpinner size={45} />
 
@@ -106,7 +79,7 @@ export default function Home() {
   const { isLoaded: userLoaded, isSignedIn } = useUser();
 
   // Start fetching asap (used in Feed component, but already starting to fetch here)
-  api.posts.getAllWithAuthor.useQuery();
+  api.posts.getAll.useQuery();
 
   if (!userLoaded) return <div />;
 

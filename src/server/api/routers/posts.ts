@@ -1,4 +1,5 @@
 import { clerkClient } from "@clerk/nextjs";
+import { Post } from "@prisma/client";
 import { TRPCError } from "@trpc/server";
 import { Ratelimit } from "@upstash/ratelimit";
 import { Redis } from "@upstash/redis/nodejs";
@@ -17,51 +18,63 @@ const ratelimit = new Ratelimit({
     analytics: true,
 })
 
-export const postsRouter = createTRPCRouter({
-    // hello: publicProcedure
-    // .input(z.object({ text: z.string() }))
-    // .query(({ input }) => {
-    //   return {
-    //     greeting: `Hello ${input.text}`,
-    //   };
-    // }),
+const addUserDataToPosts = async (posts: Post[]) => {
+    const users = (await clerkClient.users.getUserList({
+        userId: posts.map((post) => post.authorId),
+        limit: 100,
+    })).map(filterUserForClient);
 
-    getAllWithAuthor: publicProcedure.query(async ({ ctx }) => {
+    return posts.map(post => {
+        const author = users.find((user) => user.id === post.authorId)
+        if (!author || !author.name) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Author(-name) for post '${post.id}' not found` })
+
+        return { post, author }
+    });
+}
+
+export const postsRouter = createTRPCRouter({
+    getAll: publicProcedure.query(async ({ ctx }) => {
         const posts = await ctx.prisma.post.findMany({
             take: 100,
-            orderBy: [{ createdAt: "desc" }]
+            orderBy: [{ createdAt: "desc" }],
         });
 
-        const users = (await clerkClient.users.getUserList({
-            userId: posts.map((post) => post.authorId),
-            limit: 100,
-        })).map(filterUserForClient);
-
-        return posts.map(post => {
-            const author = users.find((user) => user.id === post.authorId)
-            if (!author || !author.name) throw new TRPCError({ code: "INTERNAL_SERVER_ERROR", message: `Author(-name) for post '${post.id}' not found` })
-
-            return { post, author }
-        });
+        return addUserDataToPosts(posts)
     }),
 
-    create: protectedProcedure.input(z.object({
-        content: z.string().min(1).max(280)
-    })).mutation(async ({ ctx, input }) => {
-        const authorId = ctx.userId
+    getPostsByUserId: publicProcedure.
+        input(z.object({
+            userId: z.string(),
+        }))
+        .query(async ({ ctx, input }) => {
+            const posts = await ctx.prisma.post.findMany({
+                where: { authorId: input.userId },
+                take: 100,
+                orderBy: [{ createdAt: "desc" }],
+            })
 
-        const { success } = await ratelimit.limit(authorId)
-        if (!success) {
-            throw new TRPCError({ code: "TOO_MANY_REQUESTS", })
-        }
+            return addUserDataToPosts(posts)
+        }),
 
-        const post = await ctx.prisma.post.create({
-            data: {
-                authorId,
-                content: input.content,
+    create: protectedProcedure
+        .input(z.object({
+            content: z.string().min(1).max(280)
+        }))
+        .mutation(async ({ ctx, input }) => {
+            const authorId = ctx.userId
+
+            const { success } = await ratelimit.limit(authorId)
+            if (!success) {
+                throw new TRPCError({ code: "TOO_MANY_REQUESTS", })
             }
-        })
 
-        return post
-    })
+            const post = await ctx.prisma.post.create({
+                data: {
+                    authorId,
+                    content: input.content,
+                }
+            })
+
+            return post
+        })
 });

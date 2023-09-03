@@ -3,11 +3,25 @@ import Head from 'next/head';
 import Image from "next/image";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next/types';
 import superjson from "superjson";
+import { LoadingPage } from '~/components/LoadingSpinner';
+import PostView from '~/components/PostView';
 import { PageLayout } from '~/components/layout';
 import { appRouter } from '~/server/api/root';
 import { prisma } from '~/server/db';
 import { api } from "~/utils/api";
 
+const ProfileFeed = (props: { userId: string }) => {
+    const { data, isLoading } = api.posts.getPostsByUserId.useQuery({ userId: props.userId })
+
+    if (isLoading) return <LoadingPage />
+    if (!data || data.length === 0) return <div>User has not posted</div>
+
+    return (
+        <div className='flex flex-col'>
+            {data.map(postWithAuthor => (<PostView {...postWithAuthor} key={postWithAuthor.post.id} />))}
+        </div>
+    )
+}
 
 const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProps>,) => {
     const { username } = props
@@ -35,6 +49,8 @@ const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProp
                 <div className='h-[64px]'></div>
                 <div className='p-4 text-2xl font-bold'>{`${data.name ?? ""}`}</div>
                 <div className='border-b border-slate-400 w-full' />
+
+                <ProfileFeed userId={data.id} />
             </PageLayout>
         </>
     );
