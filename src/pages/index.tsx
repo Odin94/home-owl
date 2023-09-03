@@ -7,19 +7,39 @@ import { api, type RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
-import LoadingSpinner, { CeneteredLoadingSpinner, LoadingPage } from "~/components/LoadingSpinner";
+import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner";
+import { useState } from "react";
 
 dayjs.extend(relativeTime);
 
 const CreatePostWizard = () => {
   const { user } = useUser();
+
+  const [input, setInput] = useState("")
+
+  const ctx = api.useContext();
+
+  const { mutate, isLoading: isPosting, } = api.posts.create.useMutation({
+    onSuccess: () => {
+      setInput("")
+      void ctx.posts.getAllWithAuthor.invalidate()
+    },
+    onError: (err: any) => {
+      console.log(err)
+    }
+  });
+
   if (!user) return null;
 
   return (
     <div className="flex gap-3 w-full">
-      <Image src={user.imageUrl} alt="user profile image" width="14" height="14" className="rounded-full" />
+      <Image src={user.imageUrl} alt="user profile image" width={56} height={56} className="rounded-full" />
 
-      <input type="text" placeholder="Type something funny!" className="bg-transparent grow outline-none" />
+      <input type="text" placeholder="Type something funny!" className="bg-transparent grow outline-none"
+        value={input} onChange={(e) => setInput(e.target.value)} disabled={isPosting}
+      />
+
+      <button onClick={() => mutate({ content: input })} className="">Post</button>
     </div>
   );
 };
@@ -29,33 +49,31 @@ type PostWithAuthor = RouterOutputs["posts"]["getAllWithAuthor"][number];
 const PostView = ({ post, author }: PostWithAuthor) => {
   return (
     <div className="flex p-4 border-b border-slate-400 gap-3" key={post.id}>
-      <Image src={author.imageUrl} width="48" height="14" className="rounded-full" alt="post author profile picture" />
+      <Image src={author.imageUrl} width={56} height={56} className="rounded-full" alt="post author profile picture" />
       <div className="flex flex-col">
         <div className="flex text-slate-300">
           <span>{`@${author.name} `}</span>
           <span className="font-thin">{` - ${dayjs(post.createdAt).fromNow()}`}</span>
         </div>
-        <span>{post.content}</span>
+        <span className="text-2xl">{post.content}</span>
       </div>
     </div>
   )
 }
 
 const Feed = () => {
-  const { data, isLoading: postsLoading } = api.posts.getAllWithAuthor.useQuery();
+  const { data, isLoading } = api.posts.getAllWithAuthor.useQuery();
+
+  if (isLoading) return <CeneteredLoadingSpinner size={45} />
+
+  if (!data) return <div>Something went wrong</div>
 
   return (
-    <>
-      {
-        postsLoading
-          ? <CeneteredLoadingSpinner size={45} />
-          : <div className="flex flex-col h-full">
-            {data?.map((postWithAuthor) => (
-              <PostView key={postWithAuthor.post.id} {...postWithAuthor} />
-            ))}
-          </div>
-      }
-    </>
+    <div className="flex flex-col h-full">
+      {data.map((postWithAuthor) => (
+        <PostView key={postWithAuthor.post.id} {...postWithAuthor} />
+      ))}
+    </div>
   )
 }
 
@@ -64,8 +82,6 @@ export default function Home() {
 
   // Start fetching asap (used in Feed component, but already starting to fetch here)
   api.posts.getAllWithAuthor.useQuery();
-
-  console.log({ userLoaded, isSignedIn })
 
   if (!userLoaded) return <div />;
 
