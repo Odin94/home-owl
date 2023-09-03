@@ -1,4 +1,4 @@
-import { SignIn, SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs";
 import { signIn, signOut, useSession } from "next-auth/react";
 import Head from "next/head";
 import { api, type RouterOutputs } from "~/utils/api";
@@ -7,10 +7,10 @@ import { api, type RouterOutputs } from "~/utils/api";
 import dayjs from "dayjs";
 import relativeTime from "dayjs/plugin/relativeTime";
 import Image from "next/image";
-import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner";
+import Link from "next/link";
 import { useState } from "react";
 import toast from "react-hot-toast";
-import Link from "next/link";
+import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner";
 import { PageLayout } from "~/components/layout";
 
 dayjs.extend(relativeTime);
