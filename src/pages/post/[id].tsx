@@ -6,20 +6,9 @@ import { api } from "~/utils/api";
 
 
 export default function SinglePostPage() {
-    const { isLoaded: userLoaded, isSignedIn } = useUser();
-
-    // Start fetching asap (used in Feed component, but already starting to fetch here)
-    api.posts.getAllWithAuthor.useQuery();
-
-    if (!userLoaded) return <div />;
-
+    console.log("HELLO!!\nHELLO!!\nHELLO!!\nHELLO!!\nHELLO!!\nHELLO!!")
     return (
         <>
-            <Head>
-                <title>Home Owl</title>
-                <meta name="description" content="Keep a watchful eye on your chores!" />
-                <link rel="icon" href="/favicon.ico" />
-            </Head>
             <main className="flex justify-center h-screen">
                 <div>Single Post Page</div>
             </main>

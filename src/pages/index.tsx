@@ -127,9 +127,6 @@ export default function Home() {
               : <SignInButton />
             }
           </div>
-          <SignIn path="/sign-in" routing="path" signUpUrl="/sign-up" />
-
-
           <Feed />
         </div>
       </main>
