@@ -1,17 +1,14 @@
-import { createServerSideHelpers } from '@trpc/react-query/server';
 import Head from 'next/head';
 import Image from "next/image";
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from 'next/types';
-import superjson from "superjson";
 import { LoadingPage } from '~/components/LoadingSpinner';
 import PostView from '~/components/PostView';
 import { PageLayout } from '~/components/layout';
-import { appRouter } from '~/server/api/root';
-import { prisma } from '~/server/db';
+import { createSSRHelpers } from '~/server/utils';
 import { api } from "~/utils/api";
 
 const ProfileFeed = (props: { userId: string }) => {
-    const { data, isLoading } = api.posts.getPostsByUserId.useQuery({ userId: props.userId })
+    const { data, isLoading } = api.posts.getByUserId.useQuery({ userId: props.userId })
 
     if (isLoading) return <LoadingPage />
     if (!data || data.length === 0) return <div>User has not posted</div>
@@ -34,7 +31,7 @@ const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProp
     return (
         <>
             <Head>
-                <title>{data.name} - Home Owl</title>
+                <title>{`${data.name} - Home Owl`}</title>
             </Head>
             <PageLayout>
                 <div className='h-36 bg-slate-600 relative'>
@@ -57,14 +54,10 @@ const ProfilePage = (props: InferGetServerSidePropsType<typeof getServerSideProp
 }
 
 // Grab props serverside so that profile is available already when the page loads on the client
-export const getServerSideProps = async (context: GetServerSidePropsContext<{ slug: string }>) => {
-    const helpers = createServerSideHelpers({
-        router: appRouter,
-        ctx: { prisma, userId: null },
-        transformer: superjson,
-    })
+export const getServerSideProps = async (context: GetServerSidePropsContext<{ profileSlug: string }>) => {
+    const helpers = createSSRHelpers()
 
-    const slug = context.params?.slug
+    const slug = context.params?.profileSlug
     if (typeof slug !== "string") throw new Error("no slug")
     const username = slug.replace("@", "")
 

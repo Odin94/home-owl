@@ -13,8 +13,6 @@ export const profileRouter = createTRPCRouter({
             username: z.string()
         }))
         .query(async ({ ctx, input }) => {
-            console.log(input.username)
-
             const [user] = await clerkClient.users.getUserList({
                 username: [input.username]
             })
@@ -24,9 +22,6 @@ export const profileRouter = createTRPCRouter({
             }
 
             const filtered = filterUserForClient(user)
-
-            console.log({ filtered })
-
             return filtered
         })
 });
