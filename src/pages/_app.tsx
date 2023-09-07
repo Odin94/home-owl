@@ -1,4 +1,5 @@
 import { ClerkProvider } from "@clerk/nextjs"
+import { MantineProvider } from "@mantine/core"
 import { type Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
 import { type AppType } from "next/app"
@@ -23,7 +24,17 @@ const MyApp: AppType<{ session: Session | null }> = ({
                     <link rel="icon" href="/favicon.ico" />
                 </Head>
                 <Toaster position="bottom-center" />
-                <Component {...pageProps} />
+
+                <MantineProvider
+                    withGlobalStyles
+                    withNormalizeCSS
+                    theme={{
+                        /** Put your mantine theme override here */
+                        colorScheme: "light",
+                    }}
+                >
+                    <Component {...pageProps} />
+                </MantineProvider>
             </ClerkProvider>
         </SessionProvider>
     )

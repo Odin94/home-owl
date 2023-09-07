@@ -43,17 +43,20 @@ model User {
     name          String?
     email         String?   @unique
     emailVerified DateTime?
-    image         String?
+    imageUrl      String?
     accounts      Account[]
     sessions      Session[]
+
+    clerkUserId String @unique
 
     points           Int               @default(0)
     choreCompletions ChoreCompletion[]
 
-    home   Home   @relation(fields: [homeId], references: [id])
-    homeId String
+    home   Home?   @relation(fields: [homeId], references: [id])
+    homeId String?
 
     @@index([homeId])
+    @@index([clerkUserId])
 }
 
 model VerificationToken {
