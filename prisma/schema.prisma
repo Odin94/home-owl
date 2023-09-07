@@ -46,6 +46,14 @@ model User {
     image         String?
     accounts      Account[]
     sessions      Session[]
+
+    points           Int               @default(0)
+    choreCompletions ChoreCompletion[]
+
+    home   Home   @relation(fields: [homeId], references: [id])
+    homeId String
+
+    @@index([homeId])
 }
 
 model VerificationToken {
@@ -64,4 +72,46 @@ model Post {
     authorId String
 
     @@index([authorId])
+}
+
+model Home {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+    users     User[]
+    chores    Chore[]
+}
+
+model Chore {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    displayName        String
+    description        String
+    points             Int
+    repeatAfterMinutes Int
+
+    deadline DateTime
+
+    home   Home   @relation(fields: [homeId], references: [id])
+    homeId String
+
+    choreCompletions ChoreCompletion[]
+
+    @@index([homeId])
+}
+
+model ChoreCompletion {
+    id        String   @id @default(cuid())
+    createdAt DateTime @default(now())
+
+    chore   Chore  @relation(fields: [choreId], references: [id])
+    choreId String
+
+    points Int
+
+    completedByUser   User   @relation(fields: [completedByUserId], references: [id])
+    completedByUserId String
+
+    @@index([completedByUserId])
+    @@index([choreId])
 }

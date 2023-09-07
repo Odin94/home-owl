@@ -17,6 +17,26 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
   -->
 
 
+<!-- 
+  home-owl features:
+  * Create home {*users, *chores}
+  * Create chore {name, points, date, repeat-interval, description}
+    * Create chore-completion {*chore, *completedBy}
+  * Create user {home, *completedChores, points}
+
+  * Home-view, add users button (must enter exact name of user, user mustn't have a home yet)
+  * Create home button (if you don't have a home yet)
+
+  * Chore-list sorted by deadline
+    * "Complete" button that adds chore-instance to your completedChores and updates your score & sets chore-deadline to next repeat-interval
+    * Clicking chore opens chore settings
+
+  * Chore-settings
+    * Edit any feature and save with button (creates new version)
+    * Button for custom completion on any day
+  
+ -->
+
 # Used tech
 * [T3 Stack](https://create.t3.gg/) / `create-t3-app` to initialize project
 * [[Planetscale](https://planetscale.com) for database
