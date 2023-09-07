@@ -7,14 +7,14 @@
  * need to use are documented accordingly near the end.
  */
 
-import { getAuth } from "@clerk/nextjs/server";
-import { initTRPC, TRPCError } from "@trpc/server";
-import { type CreateNextContextOptions } from "@trpc/server/adapters/next";
-import { type Session } from "next-auth";
-import superjson from "superjson";
-import { ZodError } from "zod";
-import { getServerAuthSession } from "~/server/auth";
-import { prisma } from "~/server/db";
+import { getAuth } from "@clerk/nextjs/server"
+import { initTRPC, TRPCError } from "@trpc/server"
+import { type CreateNextContextOptions } from "@trpc/server/adapters/next"
+import { type Session } from "next-auth"
+import superjson from "superjson"
+import { ZodError } from "zod"
+import { getServerAuthSession } from "~/server/auth"
+import { prisma } from "~/server/db"
 
 /**
  * 1. CONTEXT
@@ -25,7 +25,7 @@ import { prisma } from "~/server/db";
  */
 
 interface CreateContextOptions {
-  session: Session | null;
+    session: Session | null
 }
 
 /**
@@ -35,20 +35,20 @@ interface CreateContextOptions {
  * @see https://trpc.io/docs/context
  */
 export const createTRPCContext = async (opts: CreateNextContextOptions) => {
-  const { req, res } = opts;
+    const { req, res } = opts
 
-  // Get the session from the server using the getServerSession wrapper function; at least in theory
-  // in praxis I always get null from this, so I'm using this: https://github.com/t3dotgg/chirp/blob/d5215364b3f4ab82d839b4ae6e599314363c609b/src/server/api/trpc.ts#L27 (see "sesh")
-  const session = await getServerAuthSession({ req, res });
+    // Get the session from the server using the getServerSession wrapper function; at least in theory
+    // in praxis I always get null from this, so I'm using this: https://github.com/t3dotgg/chirp/blob/d5215364b3f4ab82d839b4ae6e599314363c609b/src/server/api/trpc.ts#L27 (see "sesh")
+    const session = await getServerAuthSession({ req, res })
 
-  const sesh = getAuth(req);
+    const sesh = getAuth(req)
 
-  return {
-    userId: sesh.userId,
-    // session: session,
-    prisma,
-  };
-};
+    return {
+        userId: sesh.userId,
+        // session: session,
+        prisma,
+    }
+}
 
 /**
  * 2. INITIALIZATION
@@ -59,18 +59,20 @@ export const createTRPCContext = async (opts: CreateNextContextOptions) => {
  */
 
 const t = initTRPC.context<typeof createTRPCContext>().create({
-  transformer: superjson,
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      data: {
-        ...shape.data,
-        zodError:
-          error.cause instanceof ZodError ? error.cause.flatten() : null,
-      },
-    };
-  },
-});
+    transformer: superjson,
+    errorFormatter({ shape, error }) {
+        return {
+            ...shape,
+            data: {
+                ...shape.data,
+                zodError:
+                    error.cause instanceof ZodError
+                        ? error.cause.flatten()
+                        : null,
+            },
+        }
+    },
+})
 
 /**
  * 3. ROUTER & PROCEDURE (THE IMPORTANT BIT)
@@ -84,7 +86,7 @@ const t = initTRPC.context<typeof createTRPCContext>().create({
  *
  * @see https://trpc.io/docs/router
  */
-export const createTRPCRouter = t.router;
+export const createTRPCRouter = t.router
 
 /**
  * Public (unauthenticated) procedure
@@ -93,33 +95,33 @@ export const createTRPCRouter = t.router;
  * guarantee that a user querying is authorized, but you can still access user session data if they
  * are logged in.
  */
-export const publicProcedure = t.procedure;
+export const publicProcedure = t.procedure
 
 /** Reusable middleware that enforces users are logged in before running the procedure. */
 const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
-  // Session isn't working for me (see comment above in 'createTRPCContext')
-  // if (!ctx.session?.user) {
-  //   console.log({ ctx })
-  //   throw new TRPCError({ code: "UNAUTHORIZED" });
-  // }
-  // return next({
-  //   ctx: {
-  //     // infers the `session` as non-nullable
-  //     session: { ...ctx.session, user: ctx.session.user },
-  //   },
-  // });
-  if (!ctx.userId) {
-    throw new TRPCError({
-      code: "UNAUTHORIZED",
-    });
-  }
+    // Session isn't working for me (see comment above in 'createTRPCContext')
+    // if (!ctx.session?.user) {
+    //   console.log({ ctx })
+    //   throw new TRPCError({ code: "UNAUTHORIZED" });
+    // }
+    // return next({
+    //   ctx: {
+    //     // infers the `session` as non-nullable
+    //     session: { ...ctx.session, user: ctx.session.user },
+    //   },
+    // });
+    if (!ctx.userId) {
+        throw new TRPCError({
+            code: "UNAUTHORIZED",
+        })
+    }
 
-  return next({
-    ctx: {
-      userId: ctx.userId,
-    },
-  });
-});
+    return next({
+        ctx: {
+            userId: ctx.userId,
+        },
+    })
+})
 
 /**
  * Protected (authenticated) procedure
@@ -129,4 +131,4 @@ const enforceUserIsAuthed = t.middleware(({ ctx, next }) => {
  *
  * @see https://trpc.io/docs/procedures
  */
-export const protectedProcedure = t.procedure.use(enforceUserIsAuthed);
+export const protectedProcedure = t.procedure.use(enforceUserIsAuthed)
