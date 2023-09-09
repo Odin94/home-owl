@@ -41,7 +41,7 @@ const ExistingHomeView = ({ home }: { home: HomeWithUsers }) => {
             ))}
 
             <div className="flex p-4">
-                <AddUserToHomeWizard home={home} />
+                <AddUserToHomeWizard />
             </div>
         </div>
     )
@@ -89,19 +89,20 @@ const CreateHomeWizard = () => {
     )
 }
 
-const AddUserToHomeWizard = ({ home }: { home: HomeWithUsers }) => {
+const AddUserToHomeWizard = () => {
     const { user } = useUser()
 
     const [input, setInput] = useState("")
 
     const ctx = api.useContext()
 
-    const { mutate, isLoading: isPosting } =
+    const { mutate: addUser, isLoading: isPosting } =
         api.home.addUserToMyHome.useMutation({
             onSuccess: () => {
                 setInput("")
                 void ctx.home.getMyHome.invalidate()
                 void ctx.home.getMyHomeWithClerk.invalidate()
+                toast("User added successfully!")
             },
             onError: (err: any) => {
                 const errorMessage = err.data?.zodError?.fieldErrors?.content
@@ -117,11 +118,11 @@ const AddUserToHomeWizard = ({ home }: { home: HomeWithUsers }) => {
     if (!user) return null
 
     return (
-        <div className="flex w-full gap-3">
+        <div className="flex h-9 w-full gap-3">
             <input
                 type="text"
                 placeholder="Type exact username to add to home"
-                className="grow bg-transparent outline-none"
+                className="grow border border-slate-400 bg-transparent outline-none"
                 value={input}
                 onChange={(e) => setInput(e.target.value)}
                 disabled={isPosting}
@@ -129,22 +130,27 @@ const AddUserToHomeWizard = ({ home }: { home: HomeWithUsers }) => {
                     if (e.key === "Enter") {
                         e.preventDefault()
                         if (input !== "") {
-                            void mutate({ userName: input })
+                            void addUser({ userName: input })
                         }
                     }
                 }}
             />
 
-            {input !== "" && !isPosting ? (
-                <Button
-                    onClick={() => mutate({ userName: input })}
-                    className=""
-                >
-                    Add user to my home
-                </Button>
-            ) : null}
-
-            {isPosting ? <CeneteredLoadingSpinner size={20} /> : null}
+            {!isPosting ? (
+                <div style={{ width: "30%" }}>
+                    <Button
+                        onClick={() => addUser({ userName: input })}
+                        disabled={isPosting || input === ""}
+                        className=""
+                    >
+                        Add user to my home
+                    </Button>
+                </div>
+            ) : (
+                <div style={{ width: "30%" }}>
+                    <CeneteredLoadingSpinner size={20} />
+                </div>
+            )}
         </div>
     )
 }
@@ -163,24 +169,14 @@ export default function HomeView() {
                 <title>Home - Home Owl</title>
             </Head>
 
-            <LoginHeader />
-
             <PageLayout>
-                <Center>
+                <LoginHeader />
+                <Center className="border-b border-slate-400 p-4">
                     <Text fz={"32px"} fw={"700"}>
                         Home
                     </Text>
                 </Center>
 
-                <div className="flex border-b border-slate-400 p-4">
-                    {isSignedIn ? (
-                        <div className="flex justify-center">
-                            <SignOutButton />
-                        </div>
-                    ) : (
-                        <SignInButton />
-                    )}
-                </div>
                 <div>
                     {home ? (
                         <ExistingHomeView home={home} />

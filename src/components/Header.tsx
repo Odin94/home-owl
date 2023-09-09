@@ -1,4 +1,4 @@
-import { useUser } from "@clerk/nextjs"
+import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs"
 import { useEffect } from "react"
 import { api } from "~/utils/api"
 
@@ -31,7 +31,20 @@ const LoginHeader = () => {
     }, [isClerkUserLoaded, isSignedIn, isPrismaUserLoading, prismaUser])
 
     // TODO: Put header with login/logout buttons here
-    return <div></div>
+    return (
+        <div
+            style={{ height: "55px" }}
+            className="flex border-b border-slate-400 p-4"
+        >
+            {isSignedIn ? (
+                <div className="flex justify-center">
+                    <SignOutButton />
+                </div>
+            ) : (
+                <SignInButton />
+            )}
+        </div>
+    )
 }
 
 export default LoginHeader
