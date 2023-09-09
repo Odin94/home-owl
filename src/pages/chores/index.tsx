@@ -1,6 +1,6 @@
 import { Button, Center, Group, Paper, Stack, Text, Title } from "@mantine/core"
 import { Chore } from "@prisma/client"
-import { IconCircleCheck, IconPlus } from "@tabler/icons-react"
+import { IconCheck, IconCircleCheck, IconPlus } from "@tabler/icons-react"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import Head from "next/head"
@@ -9,35 +9,45 @@ import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
 import { api } from "~/utils/api"
+import weekday from "dayjs/plugin/weekday"
+import localeData from "dayjs/plugin/localeData"
 
+dayjs.extend(localeData)
+dayjs.extend(weekday)
 dayjs.extend(relativeTime)
 
 const CompletableChoreView = ({ chore }: { chore: Chore }) => {
     const now = dayjs()
     const deadline = dayjs(chore.deadline)
     const isOverdue = deadline.isBefore(now)
-
     // TODO: Add mutation for adding new completion & updating user score
 
     return (
-        <Paper shadow="xs" p="md">
-            <Group>
+        <Paper shadow="xs" p="xs" m="5px">
+            <Group spacing="40px" className="flex">
                 <Button
+                    className="h-12 w-12 rounded-full p-2 shadow-md"
                     onClick={() => {
                         /* TODO: mutate here */
                     }}
-                    leftIcon={<IconCircleCheck />}
-                ></Button>
-                <Stack>
-                    <Title></Title>
+                    variant="gradient"
+                    gradient={{ from: "teal", to: "lime", deg: 60 }}
+                >
+                    <IconCheck className="h-9 w-9" />
+                </Button>
+                <Stack spacing="0px" className="flex-grow">
+                    <Title order={4}>{chore.name}</Title>
+                    <Text>{chore.description}</Text>
 
-                    <Group>
-                        {isOverdue ? (
-                            <Text c={"red"}>{deadline.fromNow()}</Text>
-                        ) : (
-                            <Text c={"black"}>{deadline.toNow()}</Text>
-                        )}
-
+                    <Group position="apart">
+                        <Text c={isOverdue ? "red" : "black"}>
+                            {!isOverdue
+                                ? dayjs().localeData().weekdays()[
+                                      deadline.weekday()
+                                  ]
+                                : null}{" "}
+                            {deadline.fromNow()}
+                        </Text>
                         <Text c={"gray"}>{chore.points}pts</Text>
                     </Group>
                 </Stack>

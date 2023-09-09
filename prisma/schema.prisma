@@ -88,10 +88,11 @@ model Chore {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
 
-    displayName        String
-    description        String
-    points             Int
-    repeatAfterMinutes Int
+    name                  String
+    description           String
+    points                Int
+    shouldRepeat          Boolean
+    repeatIntervalMinutes Int
 
     deadline DateTime
 
