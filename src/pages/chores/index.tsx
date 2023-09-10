@@ -1,4 +1,13 @@
-import { Button, Center, Group, Paper, Stack, Text, Title } from "@mantine/core"
+import {
+    ActionIcon,
+    Button,
+    Center,
+    Group,
+    Paper,
+    Stack,
+    Text,
+    Title,
+} from "@mantine/core"
 import { Chore } from "@prisma/client"
 import { IconCheck, IconCircleCheck, IconPlus } from "@tabler/icons-react"
 import dayjs from "dayjs"
@@ -24,28 +33,33 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
     const deadline = dayjs(chore.deadline)
     const isOverdue = deadline.isBefore(now)
 
-    const { mutate: completeChore } = api.choreCompletions.create.useMutation({
-        onSuccess: () => {
-            void ctx.chores.getMyChores.invalidate()
-            toast(`Completed ${chore.name}!`)
-        },
-        onError: (err) => {
-            console.log(err)
-            toast.error(`Failed to complete ${chore.name}. Please try again!`)
-        },
-    })
+    const { mutate: completeChore, isLoading } =
+        api.choreCompletions.create.useMutation({
+            onSuccess: () => {
+                void ctx.chores.getMyChores.invalidate()
+                toast(`Completed ${chore.name}!`)
+            },
+            onError: (err) => {
+                console.log(err)
+                toast.error(
+                    `Failed to complete ${chore.name}. Please try again!`
+                )
+            },
+        })
 
     return (
         <Paper shadow="xs" p="xs" m="5px">
             <Group spacing="40px" className="flex">
-                <Button
-                    className="h-12 w-12 rounded-full p-2 shadow-md"
+                <ActionIcon
                     onClick={() => completeChore({ choreId: chore.id })}
-                    variant="gradient"
-                    gradient={{ from: "teal", to: "lime", deg: 60 }}
+                    size="xl"
+                    variant="light"
+                    radius="xl"
+                    color="lime"
+                    loading={isLoading}
                 >
-                    <IconCheck className="h-9 w-9" />
-                </Button>
+                    <IconCheck size="1.25rem" />
+                </ActionIcon>
                 <Stack spacing="0px" className="flex-grow">
                     <Title order={4}>{chore.name}</Title>
                     <Text>{chore.description}</Text>
@@ -90,9 +104,23 @@ const ChoresView = () => {
                     </Text>
                 </Center>
 
-                {chores.map((chore) => (
-                    <CompletableChoreView chore={chore} />
-                ))}
+                {chores.length > 0 ? (
+                    chores.map((chore) => (
+                        <CompletableChoreView chore={chore} />
+                    ))
+                ) : (
+                    <Center h={"40%"} ta={"center"}>
+                        <Stack spacing="xs">
+                            <Text fz={"xl"}>
+                                Your home doesn't have any chores yet.
+                            </Text>
+                            <Text c={"gray"}>
+                                Create new chores using the "Add Chore" button
+                                below!
+                            </Text>
+                        </Stack>
+                    </Center>
+                )}
 
                 <div className="sticky top-[100vh] border-t border-slate-400 p-4">
                     <Group position="right" pr={"40px"}>
