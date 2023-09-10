@@ -31,7 +31,7 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
 
     const now = dayjs()
     const deadline = dayjs(chore.deadline)
-    const isOverdue = deadline.isBefore(now)
+    const isOverdue = deadline.isBefore(now, "day")
 
     const { mutate: completeChore, isLoading } =
         api.choreCompletions.create.useMutation({
@@ -58,7 +58,7 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
                     color="lime"
                     loading={isLoading}
                 >
-                    <IconCheck size="1.25rem" />
+                    <IconCheck size="1.75rem" />
                 </ActionIcon>
                 <Stack spacing="0px" className="flex-grow">
                     <Title order={4}>{chore.name}</Title>
@@ -90,6 +90,16 @@ const ChoresView = () => {
     if (isChoresLoading) return <LoadingPage />
     if (!chores) return <div>Error: Failed to load chores</div>
 
+    const now = dayjs()
+    const openChores = chores.filter(
+        (chore) =>
+            dayjs(chore.deadline).isBefore(now, "day") ||
+            dayjs(chore.deadline).isSame(now, "day")
+    )
+    const futureChores = chores.filter((chore) =>
+        dayjs(chore.deadline).isAfter(now, "day")
+    )
+
     return (
         <>
             <Head>
@@ -105,9 +115,21 @@ const ChoresView = () => {
                 </Center>
 
                 {chores.length > 0 ? (
-                    chores.map((chore) => (
-                        <CompletableChoreView chore={chore} />
-                    ))
+                    // TODO: Add scrolling for large number of chores?
+                    <div>
+                        {openChores.length > 0 ? (
+                            <Text mt={"xl"}>Open chores</Text>
+                        ) : null}
+                        {openChores.map((chore) => (
+                            <CompletableChoreView chore={chore} />
+                        ))}
+                        {futureChores.length > 0 ? (
+                            <Text mt={"xl"}>Upcoming chores</Text>
+                        ) : null}
+                        {futureChores.map((chore) => (
+                            <CompletableChoreView chore={chore} />
+                        ))}
+                    </div>
                 ) : (
                     <Center h={"40%"} ta={"center"}>
                         <Stack spacing="xs">
