@@ -11,25 +11,36 @@ import { PageLayout } from "~/components/layout"
 import { api } from "~/utils/api"
 import weekday from "dayjs/plugin/weekday"
 import localeData from "dayjs/plugin/localeData"
+import toast from "react-hot-toast"
 
 dayjs.extend(localeData)
 dayjs.extend(weekday)
 dayjs.extend(relativeTime)
 
 const CompletableChoreView = ({ chore }: { chore: Chore }) => {
+    const ctx = api.useContext()
+
     const now = dayjs()
     const deadline = dayjs(chore.deadline)
     const isOverdue = deadline.isBefore(now)
-    // TODO: Add mutation for adding new completion & updating user score
+
+    const { mutate: completeChore } = api.choreCompletions.create.useMutation({
+        onSuccess: () => {
+            void ctx.chores.getMyChores.invalidate()
+            toast(`Completed ${chore.name}!`)
+        },
+        onError: (err) => {
+            console.log(err)
+            toast.error(`Failed to complete ${chore.name}. Please try again!`)
+        },
+    })
 
     return (
         <Paper shadow="xs" p="xs" m="5px">
             <Group spacing="40px" className="flex">
                 <Button
                     className="h-12 w-12 rounded-full p-2 shadow-md"
-                    onClick={() => {
-                        /* TODO: mutate here */
-                    }}
+                    onClick={() => completeChore({ choreId: chore.id })}
                     variant="gradient"
                     gradient={{ from: "teal", to: "lime", deg: 60 }}
                 >
@@ -59,15 +70,11 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
 const ChoresView = () => {
     const router = useRouter()
 
-    const { data: home, isLoading: isHomeLoading } =
-        api.home.getMyHome.useQuery()
+    const { data: chores, isLoading: isChoresLoading } =
+        api.chores.getMyChores.useQuery()
 
-    if (isHomeLoading) return <LoadingPage />
-    if (!home) return <div>Error: Failed to load home</div>
-
-    const chores = home.chores.sort(
-        (a, b) => a.deadline.getTime() - b.deadline.getTime()
-    )
+    if (isChoresLoading) return <LoadingPage />
+    if (!chores) return <div>Error: Failed to load chores</div>
 
     return (
         <>

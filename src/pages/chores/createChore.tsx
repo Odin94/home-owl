@@ -98,7 +98,7 @@ const CreateChoreWizard = () => {
                         formValues.repeatIntervalNumber,
                         formValues.repeatIntervalUnit
                     )
-                    .minutes()
+                    .asMinutes()
 
                 submitValues.repeatIntervalMinutes = repeatIntervalMinutes
             }

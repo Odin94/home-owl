@@ -4,6 +4,7 @@ import { profileRouter } from "./routers/profile"
 import { homesRouter } from "./routers/homes"
 import { usersRouter } from "./routers/users"
 import { choresRouter } from "./routers/chores"
+import { choreCompletionsRouter } from "./routers/choreCompletions"
 
 /**
  * This is the primary router for your server.
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
     home: homesRouter,
     user: usersRouter,
     chores: choresRouter,
+    choreCompletions: choreCompletionsRouter,
 })
 
 // export type definition of API

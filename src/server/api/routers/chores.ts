@@ -41,7 +41,7 @@ export const choresRouter = createTRPCRouter({
 
         return await ctx.prisma.chore.findMany({
             where: { homeId: me.homeId },
-            orderBy: [{ deadline: "desc" }],
+            orderBy: [{ deadline: "asc" }],
         })
     }),
 
@@ -91,7 +91,7 @@ export const choresRouter = createTRPCRouter({
             const chore = await ctx.prisma.chore.create({
                 data: {
                     ...input,
-                    home: { connect: { id: me?.homeId } },
+                    home: { connect: { id: me.homeId } },
                 },
             })
 
