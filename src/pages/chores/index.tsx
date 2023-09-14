@@ -32,6 +32,7 @@ const completableChoreVariants = {
     normal: { backgroundColor: "white" },
     completed: {
         backgroundColor: ["#FFF", "#C0EB75"],
+        opacity: 0,
         transition: {
             duration: 1,
             ease: "easeOut",
@@ -62,55 +63,66 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
         })
 
     return (
-        <motion.div whileHover={{ scale: 1.01 }}>
-            <Paper
-                shadow="xs"
-                p="xs"
-                m="5px"
-                component={motion.div}
-                animate={isCompleted ? "completed" : "normal"}
-                variants={completableChoreVariants}
-                onAnimationComplete={() => {
-                    setIsCompleted(false)
-                    void ctx.chores.getMyChores.invalidate()
-                }}
-            >
-                <Group spacing="40px" className="flex">
-                    <ActionIcon
-                        onClick={() => {
-                            completeChore({ choreId: chore.id })
-                        }}
-                        size="xl"
-                        variant="light"
-                        radius="xl"
-                        color="lime"
-                        loading={isLoading}
-                    >
-                        <IconCheck size="1.75rem" />
-                    </ActionIcon>
-                    <Stack spacing="0px" className="flex-grow">
-                        {/* TODO: Adjust maw based on screen size */}
-                        <Title truncate order={4} maw={"500px"}>
-                            {chore.name}
-                        </Title>
-                        <Text maw={"500px"} truncate>
-                            {chore.description}
-                        </Text>
-
-                        <Group position="apart">
-                            <Text c={isOverdue ? "red" : "black"}>
-                                {!isOverdue
-                                    ? dayjs().localeData().weekdays()[
-                                          deadline.weekday()
-                                      ]
-                                    : null}{" "}
-                                {deadline.fromNow()}
+        <motion.div
+            style={{ y: 20, opacity: 0 }}
+            animate={{
+                y: 0,
+                opacity: 1,
+                transition: {
+                    duration: 0.5,
+                },
+            }}
+        >
+            <motion.div whileHover={{ scale: 1.01 }}>
+                <Paper
+                    shadow="xs"
+                    p="xs"
+                    m="5px"
+                    component={motion.div}
+                    animate={isCompleted ? "completed" : "normal"}
+                    variants={completableChoreVariants}
+                    onAnimationComplete={() => {
+                        setIsCompleted(false)
+                        void ctx.chores.getMyChores.invalidate()
+                    }}
+                >
+                    <Group spacing="40px" className="flex">
+                        <ActionIcon
+                            onClick={() => {
+                                completeChore({ choreId: chore.id })
+                            }}
+                            size="xl"
+                            variant="light"
+                            radius="xl"
+                            color="lime"
+                            loading={isLoading}
+                        >
+                            <IconCheck size="1.75rem" />
+                        </ActionIcon>
+                        <Stack spacing="0px" className="flex-grow">
+                            {/* TODO: Adjust maw based on screen size */}
+                            <Title truncate order={4} maw={"500px"}>
+                                {chore.name}
+                            </Title>
+                            <Text maw={"500px"} truncate>
+                                {chore.description}
                             </Text>
-                            <Text c={"gray"}>{chore.points}pts</Text>
-                        </Group>
-                    </Stack>
-                </Group>
-            </Paper>
+
+                            <Group position="apart">
+                                <Text c={isOverdue ? "red" : "black"}>
+                                    {!isOverdue
+                                        ? dayjs().localeData().weekdays()[
+                                              deadline.weekday()
+                                          ]
+                                        : null}{" "}
+                                    {deadline.fromNow()}
+                                </Text>
+                                <Text c={"gray"}>{chore.points}pts</Text>
+                            </Group>
+                        </Stack>
+                    </Group>
+                </Paper>
+            </motion.div>
         </motion.div>
     )
 }
