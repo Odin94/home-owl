@@ -53,7 +53,7 @@ const formSchema = z.object({
 const CreateChoreWizard = () => {
     const router = useRouter()
 
-    const { mutate: createChore } = api.chores.create.useMutation({
+    const { mutate: createChore, isLoading } = api.chores.create.useMutation({
         onSuccess: () => {
             toast(`Chore '${form.values.name}' created!`)
             form.reset()
@@ -219,6 +219,7 @@ const CreateChoreWizard = () => {
                                     to: "lime",
                                     deg: 60,
                                 }}
+                                loading={isLoading}
                             >
                                 Create Chore
                             </Button>
