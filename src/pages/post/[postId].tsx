@@ -9,11 +9,12 @@ import { createSSRHelpers } from "~/server/utils"
 import { api } from "~/utils/api"
 
 const SinglePostPage = (
-    props: InferGetServerSidePropsType<typeof getServerSideProps>
+    props: any //InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
     const { postId } = props
 
     const { data } = api.posts.getById.useQuery({ postId })
+    if (!data) throw new Error("omg no data")
     if (!data) return <div>404</div>
 
     return (
@@ -33,6 +34,7 @@ export const getServerSideProps = async (
     context: GetServerSidePropsContext<{ postId: string }>
 ) => {
     const helpers = createSSRHelpers()
+    console.error("SERVER SIDING")
 
     const postId = context.params?.postId
     if (typeof postId !== "string") throw new Error("no slug")

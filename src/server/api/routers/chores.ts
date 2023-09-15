@@ -1,3 +1,5 @@
+import { Prisma, PrismaClient } from "@prisma/client"
+import { DefaultArgs } from "@prisma/client/runtime/library"
 import { TRPCError } from "@trpc/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis/nodejs"
@@ -20,27 +22,36 @@ export const createChoreInput = z.object({
     repeatIntervalMinutes: z.number().int().min(0),
 })
 
+const getMyHomeIdOrError = async (ctx: {
+    prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
+    userId: string
+}) => {
+    const me = await ctx.prisma.user.findUnique({
+        where: { clerkUserId: ctx.userId },
+    })
+
+    if (!me) {
+        throw new TRPCError({
+            code: "UNAUTHORIZED",
+            message: "Own user not found",
+        })
+    }
+    if (!me.homeId) {
+        throw new TRPCError({
+            code: "BAD_REQUEST",
+            message: "You need to belong to a home to get chores",
+        })
+    }
+
+    return me.homeId
+}
+
 export const choresRouter = createTRPCRouter({
     getMyChores: protectedProcedure.query(async ({ ctx }) => {
-        const me = await ctx.prisma.user.findUnique({
-            where: { clerkUserId: ctx.userId },
-        })
-
-        if (!me) {
-            throw new TRPCError({
-                code: "UNAUTHORIZED",
-                message: "Own user not found",
-            })
-        }
-        if (!me.homeId) {
-            throw new TRPCError({
-                code: "BAD_REQUEST",
-                message: "You need to belong to a home to get chores",
-            })
-        }
+        const myHomeId = await getMyHomeIdOrError(ctx)
 
         return await ctx.prisma.chore.findMany({
-            where: { homeId: me.homeId },
+            where: { homeId: myHomeId },
             orderBy: [{ deadline: "asc" }],
         })
     }),
@@ -52,8 +63,11 @@ export const choresRouter = createTRPCRouter({
             })
         )
         .query(async ({ ctx, input }) => {
+            const myHomeId = await getMyHomeIdOrError(ctx)
+
             const chore = await ctx.prisma.chore.findUnique({
-                where: { id: input.choreId },
+                // TODO: Make sure all chores are only accessible to their owners
+                where: { id: input.choreId, homeId: myHomeId },
             })
 
             if (!chore) {
@@ -66,22 +80,7 @@ export const choresRouter = createTRPCRouter({
     create: protectedProcedure
         .input(createChoreInput)
         .mutation(async ({ ctx, input }) => {
-            const me = await ctx.prisma.user.findUnique({
-                where: { clerkUserId: ctx.userId },
-            })
-
-            if (!me) {
-                throw new TRPCError({
-                    code: "UNAUTHORIZED",
-                    message: "Own user not found",
-                })
-            }
-            if (!me.homeId) {
-                throw new TRPCError({
-                    code: "BAD_REQUEST",
-                    message: "You need to belong to a home to get chores",
-                })
-            }
+            const myHomeId = await getMyHomeIdOrError(ctx)
 
             const { success } = await ratelimit.limit(ctx.userId)
             if (!success) {
@@ -91,7 +90,27 @@ export const choresRouter = createTRPCRouter({
             const chore = await ctx.prisma.chore.create({
                 data: {
                     ...input,
-                    home: { connect: { id: me.homeId } },
+                    home: { connect: { id: myHomeId } },
+                },
+            })
+
+            return chore
+        }),
+
+    update: protectedProcedure
+        .input(createChoreInput.extend({ id: z.string().min(1) }))
+        .mutation(async ({ ctx, input }) => {
+            const myHomeId = await getMyHomeIdOrError(ctx)
+
+            const { success } = await ratelimit.limit(ctx.userId)
+            if (!success) {
+                throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
+            }
+
+            const chore = await ctx.prisma.chore.update({
+                where: { homeId: myHomeId, id: input.id },
+                data: {
+                    ...input,
                 },
             })
 

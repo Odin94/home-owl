@@ -24,7 +24,7 @@ import { api } from "~/utils/api"
 
 dayjs.extend(duration)
 
-type FormValues = {
+export type CreateChoreFormValues = {
     name: string
     description?: string
     points: number
@@ -34,9 +34,9 @@ type FormValues = {
     repeatIntervalUnit: string
 }
 
-type SubmitValues = z.infer<typeof createChoreInput>
+export type CreateChoreSubmitValues = z.infer<typeof createChoreInput>
 
-const formSchema = z.object({
+export const createChoreSchema = z.object({
     name: z.string().min(1),
     description: z.string(),
     points: z.number().int().min(0),
@@ -64,7 +64,7 @@ const CreateChoreWizard = () => {
         },
     })
 
-    const form = useForm<FormValues>({
+    const form = useForm<CreateChoreFormValues>({
         initialValues: {
             name: "",
             description: "",
@@ -75,15 +75,15 @@ const CreateChoreWizard = () => {
             repeatIntervalUnit: "days",
         },
 
-        validate: zodResolver(formSchema),
+        validate: zodResolver(createChoreSchema),
     })
 
     const submitForm = () => {
         form.validate()
 
         if (form.isValid()) {
-            const formValues = formSchema.parse(form.values)
-            const submitValues: SubmitValues = {
+            const formValues = createChoreSchema.parse(form.values)
+            const submitValues: CreateChoreSubmitValues = {
                 name: formValues.name,
                 description: formValues.description,
                 points: formValues.points,

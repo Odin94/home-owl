@@ -42,6 +42,7 @@ const completableChoreVariants = {
 
 const CompletableChoreView = ({ chore }: { chore: Chore }) => {
     const ctx = api.useContext()
+    const router = useRouter()
     const [isCompleted, setIsCompleted] = useState(false)
 
     const now = dayjs()
@@ -64,6 +65,9 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
 
     return (
         <motion.div
+            onClick={() => {
+                router.push(`/chores/${chore.id}`)
+            }}
             style={{ y: 20, opacity: 0 }}
             animate={{
                 y: 0,
@@ -88,7 +92,8 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
                 >
                     <Group spacing="40px" className="flex">
                         <ActionIcon
-                            onClick={() => {
+                            onClick={(e) => {
+                                e.preventDefault()
                                 completeChore({ choreId: chore.id })
                             }}
                             size="xl"
