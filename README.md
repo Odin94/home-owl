@@ -74,4 +74,4 @@ Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/ver
 
 
 ## Credits
-* Owl Icon [Flat Icons](https://www.flaticon.com/free-icons/snowy-owl)
+* Jellyfish Icon [Flat Icons](https://www.flaticon.com/free-icons/jellyfish)
