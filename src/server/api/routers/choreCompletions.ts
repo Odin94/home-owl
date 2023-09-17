@@ -5,6 +5,7 @@ import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import { getNextDeadline } from "~/utils/utils"
 dayjs.extend(duration)
 
 // Allow 10 requests per 20s
@@ -62,9 +63,10 @@ export const choreCompletionsRouter = createTRPCRouter({
                 where: { id: me.id },
                 data: { points: me.points + chore.points },
             })
-            const newDeadline = dayjs(chore.deadline)
-                .add(dayjs.duration(chore.repeatIntervalMinutes, "minutes"))
-                .toDate()
+            const newDeadline = getNextDeadline(
+                chore.deadline,
+                chore.repeatIntervalMinutes
+            )
             const updateChoreQuery = ctx.prisma.chore.update({
                 where: { id: chore.id },
                 data: chore.shouldRepeat ? { deadline: newDeadline } : {},

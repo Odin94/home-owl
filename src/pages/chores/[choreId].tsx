@@ -4,12 +4,14 @@ import {
     Group,
     NumberInput,
     SegmentedControl,
+    Space,
     Switch,
     Text,
     TextInput,
 } from "@mantine/core"
-import { DatePickerInput } from "@mantine/dates"
+import { DateInput, DatePickerInput, DateValue } from "@mantine/dates"
 import { useForm, zodResolver } from "@mantine/form"
+import { modals } from "@mantine/modals"
 import { Prisma } from "@prisma/client"
 import {
     IconArrowLeft,
@@ -22,6 +24,7 @@ import duration from "dayjs/plugin/duration"
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next"
 import Head from "next/head"
 import { useRouter } from "next/router"
+import { useState } from "react"
 import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
@@ -29,12 +32,12 @@ import { PageLayout } from "~/components/layout"
 import { getServerAuthSession } from "~/server/auth"
 import { createSSRHelpers } from "~/server/utils"
 import { api } from "~/utils/api"
+import { getNextDeadline } from "~/utils/utils"
 import {
     CreateChoreFormValues,
     CreateChoreSubmitValues,
     createChoreSchema,
 } from "./createChore"
-import { modals } from "@mantine/modals"
 dayjs.extend(duration)
 
 const ChoreDetailsView = (
@@ -159,6 +162,70 @@ const ChoreDetailsViewInner = ({
             centered: true,
         })
 
+    const skipTo = async (date: DateValue) => {
+        if (date) await updateChore({ ...chore, deadline: date })
+        console.log(date)
+        modals.closeAll()
+    }
+    const openSkipModal = () => {
+        let skipDate: DateValue = chore.deadline
+        modals.open({
+            title: `Skip '${chore.name}' to`,
+            children: (
+                <>
+                    <Space h="xl" />
+                    <DateInput
+                        // Can't use controlled value here because modal doesn't update with re-renders
+                        defaultValue={skipDate}
+                        onChange={(value) => {
+                            skipDate = value
+                        }}
+                        mb={"350px"}
+                        label="Skip to"
+                        placeholder="Skip to"
+                        data-autofocus
+                    />
+                    <Group my={"xl"} position="center" grow>
+                        <Button
+                            onClick={() => skipTo(new Date())}
+                            color="yellow"
+                        >
+                            Skip to today
+                        </Button>
+                        <Button
+                            onClick={() => {
+                                const newDeadline = getNextDeadline(
+                                    chore.deadline,
+                                    chore.repeatIntervalMinutes
+                                )
+                                skipTo(newDeadline)
+                            }}
+                            color="orange"
+                        >
+                            Skip to next
+                        </Button>
+                    </Group>
+                    <Button
+                        fullWidth
+                        onClick={() => {
+                            console.log(skipDate)
+                            skipTo(skipDate)
+                        }}
+                        variant="gradient"
+                        gradient={{
+                            from: "yellow",
+                            to: "orange",
+                            deg: 60,
+                        }}
+                    >
+                        Skip
+                    </Button>
+                </>
+            ),
+            centered: true,
+        })
+    }
+
     const submitForm = () => {
         form.validate()
 
@@ -204,16 +271,18 @@ const ChoreDetailsViewInner = ({
                     </Text>
                 </Center>
 
-                <Button
-                    p={"5px"}
-                    w={"80px"}
-                    color="teal"
-                    variant="subtle"
-                    leftIcon={<IconArrowLeft />}
-                    onClick={() => router.push("/chores")}
-                >
-                    Back
-                </Button>
+                <div className="p-2">
+                    <Button
+                        p={"5px"}
+                        w={"80px"}
+                        color="teal"
+                        variant="subtle"
+                        leftIcon={<IconArrowLeft />}
+                        onClick={() => router.push("/chores")}
+                    >
+                        Back
+                    </Button>
+                </div>
 
                 <Center mt={"xl"}>
                     <form style={{ width: "400px" }}>
@@ -324,6 +393,7 @@ const ChoreDetailsViewInner = ({
                             Custom Completion
                         </Button>
                         <Button
+                            onClick={openSkipModal}
                             variant="gradient"
                             gradient={{
                                 from: "yellow",
