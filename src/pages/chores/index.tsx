@@ -94,6 +94,7 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
                         <ActionIcon
                             onClick={(e) => {
                                 e.preventDefault()
+                                e.stopPropagation()
                                 completeChore({ choreId: chore.id })
                             }}
                             size="xl"

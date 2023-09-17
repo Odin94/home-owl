@@ -116,4 +116,14 @@ export const choresRouter = createTRPCRouter({
 
             return chore
         }),
+
+    delete: protectedProcedure
+        .input(z.object({ id: z.string().min(1) }))
+        .mutation(async ({ ctx, input }) => {
+            const myHomeId = await getMyHomeIdOrError(ctx)
+
+            await ctx.prisma.chore.delete({
+                where: { homeId: myHomeId, id: input.id },
+            })
+        }),
 })

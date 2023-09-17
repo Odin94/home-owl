@@ -10,7 +10,13 @@ import {
 } from "@mantine/core"
 import { DatePickerInput } from "@mantine/dates"
 import { useForm, zodResolver } from "@mantine/form"
-import { IconArrowLeft } from "@tabler/icons-react"
+import { Prisma } from "@prisma/client"
+import {
+    IconArrowLeft,
+    IconCheckbox,
+    IconPlayerSkipForward,
+    IconTrashX,
+} from "@tabler/icons-react"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next"
@@ -18,7 +24,9 @@ import Head from "next/head"
 import { useRouter } from "next/router"
 import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
+import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
+import { getServerAuthSession } from "~/server/auth"
 import { createSSRHelpers } from "~/server/utils"
 import { api } from "~/utils/api"
 import {
@@ -26,9 +34,7 @@ import {
     CreateChoreSubmitValues,
     createChoreSchema,
 } from "./createChore"
-import { getServerAuthSession } from "~/server/auth"
-import { LoadingPage } from "~/components/LoadingSpinner"
-import { Prisma } from "@prisma/client"
+import { modals } from "@mantine/modals"
 dayjs.extend(duration)
 
 const ChoreDetailsView = (
@@ -103,6 +109,19 @@ const ChoreDetailsViewInner = ({
         },
     })
 
+    const { mutate: deleteChore, isLoading: isDeleteLoading } =
+        api.chores.delete.useMutation({
+            onSuccess: () => {
+                toast(`Chore '${form.values.name}' deleted!`)
+                void ctx.chores.getById.invalidate()
+                router.push("/chores")
+            },
+            onError: (err: any) => {
+                console.error(err)
+                toast.error(`Failed to delete chore, please try again!`)
+            },
+        })
+
     const repeatIntervalUnit = getUnitFromIntervalInMinutes(
         chore.repeatIntervalMinutes
     )
@@ -123,6 +142,22 @@ const ChoreDetailsViewInner = ({
 
         validate: zodResolver(createChoreSchema),
     })
+
+    const shortChoreName =
+        chore.name.length > 14
+            ? chore.name.substring(0, 10) + "..."
+            : chore.name
+    const openDeleteModal = () =>
+        modals.openConfirmModal({
+            title: `Delete '${chore.name}'?`,
+            labels: {
+                confirm: `Delete '${shortChoreName}'`,
+                cancel: "Cancel",
+            },
+            confirmProps: { color: "red" },
+            onConfirm: async () => await deleteChore({ id: chore.id }),
+            centered: true,
+        })
 
     const submitForm = () => {
         form.validate()
@@ -273,6 +308,46 @@ const ChoreDetailsViewInner = ({
                             </Button>
                         </Center>
                     </form>
+                </Center>
+
+                <Center className="mt-8 border-y border-slate-400 p-4">
+                    <Group spacing="xl">
+                        <Button
+                            variant="gradient"
+                            gradient={{
+                                from: "green",
+                                to: "teal",
+                                deg: 60,
+                            }}
+                            leftIcon={<IconCheckbox />}
+                        >
+                            Custom Completion
+                        </Button>
+                        <Button
+                            variant="gradient"
+                            gradient={{
+                                from: "yellow",
+                                to: "orange",
+                                deg: 60,
+                            }}
+                            leftIcon={<IconPlayerSkipForward />}
+                        >
+                            Skip
+                        </Button>
+                        <Button
+                            onClick={openDeleteModal}
+                            variant="gradient"
+                            gradient={{
+                                from: "red",
+                                to: "pink",
+                                deg: 60,
+                            }}
+                            leftIcon={<IconTrashX />}
+                            loading={isDeleteLoading}
+                        >
+                            Delete
+                        </Button>
+                    </Group>
                 </Center>
             </PageLayout>
         </>

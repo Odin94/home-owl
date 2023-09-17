@@ -1,5 +1,6 @@
 import { ClerkProvider } from "@clerk/nextjs"
 import { MantineProvider } from "@mantine/core"
+import { ModalsProvider } from "@mantine/modals"
 import { type Session } from "next-auth"
 import { SessionProvider } from "next-auth/react"
 import { type AppType } from "next/app"
@@ -33,7 +34,9 @@ const MyApp: AppType<{ session: Session | null }> = ({
                         colorScheme: "light",
                     }}
                 >
-                    <Component {...pageProps} />
+                    <ModalsProvider>
+                        <Component {...pageProps} />
+                    </ModalsProvider>
                 </MantineProvider>
             </ClerkProvider>
         </SessionProvider>

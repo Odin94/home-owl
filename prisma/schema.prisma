@@ -108,8 +108,9 @@ model ChoreCompletion {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
 
-    chore   Chore  @relation(fields: [choreId], references: [id])
-    choreId String
+    chore     Chore?  @relation(fields: [choreId], references: [id], onDelete: SetNull)
+    choreId   String?
+    choreName String?
 
     points Int
 

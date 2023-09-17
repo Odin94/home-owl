@@ -5,7 +5,7 @@ Home Owl is a household chore tracker. Create (recurring) chores, mark them as c
 Home Owl makes it fun and easy to keep track of who does how much work around the house. To create a fair workload distribution and a happy and relaxed vibe around chores.
 
 <!-- Notes to self
-* Stopped here: https://youtu.be/YkOSUVzOAA4?t=9619
+* https://youtu.be/YkOSUVzOAA4
 
 * Find a hosted database service (maybe supabase?) with automated backups
   * https://www.prisma.io/docs/guides/database/supabase
@@ -15,23 +15,15 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
   -->
 
 <!--
-  home-owl features:
-  * Create home {*users, *chores}
-  * Create chore {name, points, date, repeat-interval, description}
-    * Create chore-completion {*chore, *completedBy}
-  * Create user {home, *completedChores, points}
+TODOs:
+* Add skipping chore
+* Add custom completion (freely choose date)
+* Add page for seeing user's total score and completion history
+* Add deleting chore (to edit page?)
 
-  * Home-view, add users button (must enter exact name of user, user mustn't have a home yet)
-  * Create home button (if you don't have a home yet)
-
-  * Chore-list sorted by deadline
-    * "Complete" button that adds chore-instance to your completedChores and updates your score & sets chore-deadline to next repeat-interval
-    * Clicking chore opens chore settings
-
-  * Chore-settings
-    * Edit any feature and save with button (creates new version)
-    * Button for custom completion on any day
-
+Stretch goals:
+* Add chore-edit-history (for tracking and undoing)
+* Build a mobile / desktop app?
  -->
 
 # Used tech

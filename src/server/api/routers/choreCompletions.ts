@@ -53,6 +53,7 @@ export const choreCompletionsRouter = createTRPCRouter({
             const createChoreQuery = ctx.prisma.choreCompletion.create({
                 data: {
                     points: chore.points,
+                    choreName: chore.name,
                     chore: { connect: { id: chore.id } },
                     completedByUser: { connect: { id: me.id } },
                 },
