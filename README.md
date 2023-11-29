@@ -4,6 +4,12 @@ Home Owl is a household chore tracker. Create (recurring) chores, mark them as c
 
 Home Owl makes it fun and easy to keep track of who does how much work around the house. To create a fair workload distribution and a happy and relaxed vibe around chores.
 
+
+## How to run
+* Create planetscale database, clerk auth & upstash redis -> fill `.env` file based on `.env.sample`
+* `docker compose up -d` to get local db running
+* `npm run dev` for running in dev mode
+
 <!-- Notes to self
 * https://youtu.be/YkOSUVzOAA4
 
@@ -16,10 +22,11 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 
 <!--
 TODOs:
-* Add skipping chore
-* Add custom completion (freely choose date)
 * Add page for seeing user's total score and completion history
-* Add deleting chore (to edit page?)
+  * Allow un-doing completions
+* Make skipping chores snappier (remove delay from update function, but only for skipping)
+* Add login page
+  * Make UNAUTHORIZED errors redirect to login page
 
 Stretch goals:
 * Add chore-edit-history (for tracking and undoing)
@@ -50,15 +57,6 @@ If you are not familiar with the different technologies used in this project, pl
 -   [Prisma](https://prisma.io)
 -   [Tailwind CSS](https://tailwindcss.com)
 -   [tRPC](https://trpc.io)
-
-## Learn More
-
-To learn more about the [T3 Stack](https://create.t3.gg/), take a look at the following resources:
-
--   [Documentation](https://create.t3.gg/)
--   [Learn the T3 Stack](https://create.t3.gg/en/faq#what-learning-resources-are-currently-available) — Check out these awesome tutorials
-
-You can check out the [create-t3-app GitHub repository](https://github.com/t3-oss/create-t3-app) — your feedback and contributions are welcome!
 
 ## How do I deploy this?
 
