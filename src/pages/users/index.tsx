@@ -44,11 +44,11 @@ const UsersView = () => {
 
             <PageLayout>
                 <LoginHeader />
-                <Center className="border-b border-slate-400 p-4">
+                {/* <Center className="border-b border-slate-400 p-4">
                     <Text fz={"32px"} fw={"700"}>
                         Users
                     </Text>
-                </Center>
+                </Center> */}
 
                 {usersWithChoreCompletions
                     .sort((a, b) => b.points - a.points)

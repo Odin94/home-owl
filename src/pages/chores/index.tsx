@@ -147,11 +147,11 @@ const ChoresView = () => {
 
             <PageLayout>
                 <LoginHeader />
-                <Center className="border-b border-slate-400 p-4">
+                {/* <Center className="border-b border-slate-400 p-4">
                     <Text fz={"32px"} fw={"700"}>
                         Chores
                     </Text>
-                </Center>
+                </Center> */}
 
                 {chores.length > 0 ? (
                     // TODO: Add scrolling for large number of chores?

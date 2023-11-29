@@ -55,23 +55,26 @@ const LoginHeader = () => {
                 >
                     <Tabs.List grow>
                         <Tabs.Tab
+                            fz={"lg"}
                             onClick={() => router.push("/home")}
                             value="/home"
-                            icon={<IconHome size="0.8rem" />}
+                            icon={<IconHome size="1.0rem" />}
                         >
                             Home
                         </Tabs.Tab>
                         <Tabs.Tab
+                            fz={"lg"}
                             onClick={() => router.push("/chores")}
                             value="/chores"
-                            icon={<IconSettings size="0.8rem" />}
+                            icon={<IconSettings size="1.0rem" />}
                         >
                             Chores
                         </Tabs.Tab>
                         <Tabs.Tab
+                            fz={"lg"}
                             onClick={() => router.push("/users")}
                             value="/users"
-                            icon={<IconUsers size="0.8rem" />}
+                            icon={<IconUsers size="1.0rem" />}
                         >
                             Users
                         </Tabs.Tab>

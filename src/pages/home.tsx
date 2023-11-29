@@ -151,11 +151,11 @@ export default function HomeView() {
 
             <PageLayout>
                 <LoginHeader />
-                <Center className="border-b border-slate-400 p-4">
+                {/* <Center className="border-b border-slate-400 p-4">
                     <Text fz={"32px"} fw={"700"}>
                         Home
                     </Text>
-                </Center>
+                </Center> */}
 
                 <div>
                     {home ? (
