@@ -34,9 +34,9 @@ const LoginHeader = () => {
         }
     }, [isClerkUserLoaded, isSignedIn, isPrismaUserLoading, prismaUser])
 
-    const [activeTab, setActiveTab] = useState<string | null>(
-        window.location.pathname
-    )
+    const location =
+        typeof window !== "undefined" ? window.location.pathname : ""
+    const [activeTab, setActiveTab] = useState<string | null>(location)
 
     return (
         <div style={{ height: "120px", width: "100%" }} className="flex p-4">
