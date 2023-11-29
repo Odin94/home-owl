@@ -38,7 +38,7 @@ import {
     CreateChoreSubmitValues,
     createChoreSchema,
 } from "./createChore"
-import { useCompleteChore } from "./hooks"
+import { useCompleteChore } from "../../utils/hooks"
 import CustomCompletionModal from "~/components/CustomCompletionModal"
 dayjs.extend(duration)
 

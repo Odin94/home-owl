@@ -21,7 +21,7 @@ import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
 import { api } from "~/utils/api"
-import { useCompleteChore } from "./hooks"
+import { useCompleteChore } from "../../utils/hooks"
 
 dayjs.extend(localeData)
 dayjs.extend(weekday)
