@@ -84,6 +84,7 @@ const CompletedChoresView = ({ user }: { user: UserWithChoreCompletions }) => {
                     {firstSet.map((choreCompletion) => {
                         return (
                             <CompletedChoreView
+                                key={choreCompletion?.id}
                                 choreCompletion={choreCompletion!}
                             />
                         )
@@ -97,6 +98,7 @@ const CompletedChoresView = ({ user }: { user: UserWithChoreCompletions }) => {
                             {tail.map((choreCompletion) => {
                                 return (
                                     <CompletedChoreView
+                                        key={choreCompletion?.id}
                                         choreCompletion={choreCompletion}
                                     />
                                 )

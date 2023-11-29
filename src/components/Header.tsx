@@ -1,8 +1,12 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs"
-import { useEffect } from "react"
+import { Button, Group, Stack, Tabs } from "@mantine/core"
+import { IconHome, IconSettings, IconUsers } from "@tabler/icons-react"
+import { NextRouter, useRouter } from "next/router"
+import { useEffect, useState } from "react"
 import { api } from "~/utils/api"
 
 const LoginHeader = () => {
+    const router = useRouter()
     const ctx = api.useContext()
     const { isLoaded: isClerkUserLoaded, isSignedIn } = useUser()
 
@@ -30,20 +34,97 @@ const LoginHeader = () => {
         }
     }, [isClerkUserLoaded, isSignedIn, isPrismaUserLoading, prismaUser])
 
-    // TODO: Put header with login/logout buttons here
+    const [activeTab, setActiveTab] = useState<string | null>(
+        window.location.pathname
+    )
+
     return (
-        <div
-            style={{ height: "55px" }}
-            className="flex border-b border-slate-400 p-4"
-        >
+        <div style={{ height: "120px", width: "100%" }} className="flex p-4">
+            <Stack style={{ width: "100%" }}>
+                <Group position="right">
+                    <ClerkAuthButton
+                        isSignedIn={!!isSignedIn}
+                        router={router}
+                    />
+                </Group>
+                <Tabs
+                    value={activeTab}
+                    onTabChange={setActiveTab}
+                    w={"100%"}
+                    color="teal"
+                >
+                    <Tabs.List grow>
+                        <Tabs.Tab
+                            onClick={() => router.push("/home")}
+                            value="/home"
+                            icon={<IconHome size="0.8rem" />}
+                        >
+                            Home
+                        </Tabs.Tab>
+                        <Tabs.Tab
+                            onClick={() => router.push("/chores")}
+                            value="/chores"
+                            icon={<IconSettings size="0.8rem" />}
+                        >
+                            Chores
+                        </Tabs.Tab>
+                        <Tabs.Tab
+                            onClick={() => router.push("/users")}
+                            value="/users"
+                            icon={<IconUsers size="0.8rem" />}
+                        >
+                            Users
+                        </Tabs.Tab>
+                    </Tabs.List>
+                </Tabs>
+            </Stack>
+        </div>
+    )
+}
+
+const ClerkAuthButton = ({
+    isSignedIn,
+    router,
+}: {
+    isSignedIn: boolean
+    router: NextRouter
+}) => {
+    return (
+        <>
             {isSignedIn ? (
                 <div className="flex justify-center">
-                    <SignOutButton />
+                    <SignOutButton
+                        signOutCallback={() => {
+                            router.push("/")
+                        }}
+                    >
+                        <Button
+                            size="xs"
+                            radius="xl"
+                            variant="subtle"
+                            color="yellow"
+                        >
+                            Sign out
+                        </Button>
+                    </SignOutButton>
                 </div>
             ) : (
-                <SignInButton />
+                <SignInButton>
+                    <Button
+                        size="xs"
+                        radius="xl"
+                        variant="gradient"
+                        gradient={{
+                            from: "teal",
+                            to: "lime",
+                            deg: 60,
+                        }}
+                    >
+                        Sign in
+                    </Button>
+                </SignInButton>
             )}
-        </div>
+        </>
     )
 }
 

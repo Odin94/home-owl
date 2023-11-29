@@ -1,7 +1,9 @@
 import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs"
+import { Button } from "@mantine/core"
 import { signIn, signOut, useSession } from "next-auth/react"
 import Head from "next/head"
 import Image from "next/image"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { CeneteredLoadingSpinner } from "~/components/LoadingSpinner"
@@ -89,6 +91,7 @@ const Feed = () => {
 }
 
 export default function Home() {
+    const router = useRouter()
     const { isLoaded: userLoaded, isSignedIn } = useUser()
 
     // Start fetching asap (used in Feed component, but already starting to fetch here)
@@ -117,6 +120,9 @@ export default function Home() {
                         <SignInButton />
                     )}
                 </div>
+                <Button onClick={() => router.push("/chores")}>
+                    To Chores
+                </Button>
                 <Feed />
             </PageLayout>
         </>
