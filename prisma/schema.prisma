@@ -67,16 +67,6 @@ model VerificationToken {
     @@unique([identifier, token])
 }
 
-model Post {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
-
-    content  String @db.VarChar(255)
-    authorId String
-
-    @@index([authorId])
-}
-
 model Home {
     id        String   @id @default(cuid())
     createdAt DateTime @default(now())
