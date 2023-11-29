@@ -1,8 +1,5 @@
 import Head from "next/head"
-import {
-    GetServerSidePropsContext,
-    InferGetServerSidePropsType,
-} from "next/types"
+import { GetServerSidePropsContext } from "next/types"
 import PostView from "~/components/PostView"
 import { PageLayout } from "~/components/layout"
 import { createSSRHelpers } from "~/server/utils"

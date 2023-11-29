@@ -1,8 +1,6 @@
-import { SignInButton, SignOutButton, useUser } from "@clerk/nextjs"
+import { useUser } from "@clerk/nextjs"
 import { Button, Center, Stack, Text } from "@mantine/core"
-import { User } from "@prisma/client"
 import Head from "next/head"
-import Image from "next/image"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
@@ -10,28 +8,10 @@ import {
     CeneteredLoadingSpinner,
     LoadingPage,
 } from "~/components/LoadingSpinner"
+import UserView from "~/components/UserView"
 import { PageLayout } from "~/components/layout"
 import { HomeWithUsers } from "~/server/api/routers/homes"
 import { api } from "~/utils/api"
-
-const UserView = ({ user }: { user: User }) => {
-    return (
-        <div className="flex gap-3 border-b border-slate-400 p-4" key={user.id}>
-            <Image
-                src={user.imageUrl ?? ""}
-                width={56}
-                height={56}
-                className="rounded-full"
-                alt="user profile picture"
-            />
-            <div className="flex flex-col">
-                <div className="flex gap-1 text-slate-500">
-                    <span>{`${user.name} `}</span>
-                </div>
-            </div>
-        </div>
-    )
-}
 
 const ExistingHomeView = ({ home }: { home: HomeWithUsers }) => {
     return (

@@ -117,6 +117,40 @@ export const homesRouter = createTRPCRouter({
         return prismaUserWithHome.home
     }),
 
+    getUsersWithChoreCompletionsInMyHome: protectedProcedure.query(
+        async ({ ctx }) => {
+            const me = await ctx.prisma.user.findUnique({
+                where: { clerkUserId: ctx.userId },
+            })
+
+            if (!me) {
+                throw new TRPCError({
+                    code: "UNAUTHORIZED",
+                    message: "Own user not found",
+                })
+            }
+            if (!me.homeId) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "You need to belong to a home to complete chores",
+                })
+            }
+
+            const users = await ctx.prisma.user.findMany({
+                where: { homeId: me.homeId },
+                include: { choreCompletions: true },
+            })
+
+            if (users.length === 0) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                })
+            }
+
+            return users
+        }
+    ),
+
     getMyHomeWithClerk: protectedProcedure.query(async ({ ctx }) => {
         const home = await ctx.prisma.home.findUnique({
             where: { id: ctx.userId },

@@ -22,8 +22,8 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 
 <!--
 TODOs:
-* Add page for seeing user's total score and completion history
-  * Allow un-doing completions
+* Allow un-doing completions
+* Add header for navigation (/home, /chores, ..?)
 * Make skipping chores snappier (remove delay from update function, but only for skipping)
 * Add login page
   * Make UNAUTHORIZED errors redirect to login page
