@@ -112,7 +112,7 @@ const ClerkAuthButton = ({
                     </SignOutButton>
                 </div>
             ) : (
-                <SignInButton>
+                <SignInButton redirectUrl="/chores">
                     <Button
                         size="xs"
                         radius="xl"
