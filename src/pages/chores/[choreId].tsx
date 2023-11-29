@@ -11,6 +11,7 @@ import {
 } from "@mantine/core"
 import { DateInput, DatePickerInput, DateValue } from "@mantine/dates"
 import { useForm, zodResolver } from "@mantine/form"
+import { useDisclosure } from "@mantine/hooks"
 import { modals } from "@mantine/modals"
 import { Chore, Prisma } from "@prisma/client"
 import {
@@ -38,6 +39,7 @@ import {
     createChoreSchema,
 } from "./createChore"
 import { useCompleteChore } from "./hooks"
+import CustomCompletionModal from "~/components/CustomCompletionModal"
 dayjs.extend(duration)
 
 const ChoreDetailsView = (
@@ -100,19 +102,27 @@ const ChoreDetailsViewInner = ({
     const router = useRouter()
     const ctx = api.useContext()
 
-    const { completeChore } = useCompleteChore(chore)
+    const [
+        customCompletionModalOpened,
+        { open: openCustomCompletionModal, close: closeCustomCompletionModal },
+    ] = useDisclosure(false)
+    const { completeChore, isLoading: isCompleteLoading } = useCompleteChore(
+        chore,
+        closeCustomCompletionModal
+    )
 
-    const { mutate: updateChore, isLoading } = api.chores.update.useMutation({
-        onSuccess: () => {
-            toast(`Chore '${form.values.name}' updated!`)
-            void ctx.chores.getById.invalidate()
-            setTimeout(() => router.push("/chores"), 1000)
-        },
-        onError: (err: any) => {
-            console.error(err)
-            toast.error(`Failed to update chore, please try again!`)
-        },
-    })
+    const { mutate: updateChore, isLoading: isUpdateLoading } =
+        api.chores.update.useMutation({
+            onSuccess: () => {
+                toast(`Chore '${form.values.name}' updated!`)
+                void ctx.chores.getById.invalidate()
+                setTimeout(() => router.push("/chores"), 1000)
+            },
+            onError: (err: any) => {
+                console.error(err)
+                toast.error(`Failed to update chore, please try again!`)
+            },
+        })
 
     const { mutate: deleteChore, isLoading: isDeleteLoading } =
         api.chores.delete.useMutation({
@@ -162,7 +172,7 @@ const ChoreDetailsViewInner = ({
         // TODO: Add loading spinner while completion is in flight and only close modal after success
         if (date) await completeChore({ choreId: chore.id, completedAt: date })
         console.log(date)
-        modals.closeAll()
+        // modals.closeAll()
     }
 
     const openDeleteModal = () =>
@@ -213,6 +223,14 @@ const ChoreDetailsViewInner = ({
             <Head>
                 <title>{chore.name} - Home Owl</title>
             </Head>
+
+            <CustomCompletionModal
+                chore={chore}
+                completeOn={completeOn}
+                opened={customCompletionModalOpened}
+                close={closeCustomCompletionModal}
+                isLoading={isCompleteLoading}
+            />
 
             <PageLayout>
                 <LoginHeader />
@@ -322,7 +340,7 @@ const ChoreDetailsViewInner = ({
                                     to: "lime",
                                     deg: 60,
                                 }}
-                                loading={isLoading}
+                                loading={isUpdateLoading}
                             >
                                 Update Chore
                             </Button>
@@ -333,9 +351,7 @@ const ChoreDetailsViewInner = ({
                 <Center className="mt-8 border-y border-slate-400 p-4">
                     <Group spacing="xl">
                         <Button
-                            onClick={() =>
-                                openCustomCompletionModal(chore, completeOn)
-                            }
+                            onClick={() => openCustomCompletionModal()}
                             variant="gradient"
                             gradient={{
                                 from: "green",
@@ -401,46 +417,7 @@ export const getServerSideProps = async (
     }
 }
 
-const openCustomCompletionModal = (
-    chore: Chore,
-    completeOn: (date: DateValue) => Promise<void>
-) => {
-    let customCompletionDate: DateValue = new Date()
-    modals.open({
-        title: `Custom completion for '${chore.name}'`,
-        children: (
-            <>
-                <DateInput
-                    // Can't use controlled value here because modal doesn't update with re-renders
-                    defaultValue={customCompletionDate}
-                    onChange={(value) => {
-                        customCompletionDate = value
-                    }}
-                    mb={"350px"}
-                    label="Complete on"
-                    data-autofocus
-                />
-                <Button
-                    fullWidth
-                    onClick={() => {
-                        console.log(customCompletionDate)
-                        completeOn(customCompletionDate)
-                    }}
-                    variant="gradient"
-                    gradient={{
-                        from: "green",
-                        to: "teal",
-                        deg: 60,
-                    }}
-                >
-                    Complete on selected date
-                </Button>
-            </>
-        ),
-        centered: true,
-    })
-}
-
+// TODO: Align this with CustomCompletionModal?
 const openSkipModal = (
     chore: Chore,
     skipTo: (date: DateValue) => Promise<void>
