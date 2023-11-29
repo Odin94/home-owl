@@ -17,12 +17,11 @@ import weekday from "dayjs/plugin/weekday"
 import { motion } from "framer-motion"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { useState } from "react"
-import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
 import { api } from "~/utils/api"
+import { useCompleteChore } from "./hooks"
 
 dayjs.extend(localeData)
 dayjs.extend(weekday)
@@ -43,25 +42,13 @@ const completableChoreVariants = {
 const CompletableChoreView = ({ chore }: { chore: Chore }) => {
     const ctx = api.useContext()
     const router = useRouter()
-    const [isCompleted, setIsCompleted] = useState(false)
 
     const now = dayjs()
     const deadline = dayjs(chore.deadline)
     const isOverdue = deadline.isBefore(now, "day")
 
-    const { mutate: completeChore, isLoading } =
-        api.choreCompletions.create.useMutation({
-            onSuccess: () => {
-                toast(`Completed ${chore.name}!`)
-                setIsCompleted(true)
-            },
-            onError: (err) => {
-                console.log(err)
-                toast.error(
-                    `Failed to complete ${chore.name}. Please try again!`
-                )
-            },
-        })
+    const { completeChore, isLoading, isCompleted, setIsCompleted } =
+        useCompleteChore(chore)
 
     return (
         <motion.div

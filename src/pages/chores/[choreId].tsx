@@ -12,7 +12,7 @@ import {
 import { DateInput, DatePickerInput, DateValue } from "@mantine/dates"
 import { useForm, zodResolver } from "@mantine/form"
 import { modals } from "@mantine/modals"
-import { Prisma } from "@prisma/client"
+import { Chore, Prisma } from "@prisma/client"
 import {
     IconArrowLeft,
     IconCheckbox,
@@ -24,7 +24,6 @@ import duration from "dayjs/plugin/duration"
 import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next"
 import Head from "next/head"
 import { useRouter } from "next/router"
-import { useState } from "react"
 import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
@@ -38,6 +37,7 @@ import {
     CreateChoreSubmitValues,
     createChoreSchema,
 } from "./createChore"
+import { useCompleteChore } from "./hooks"
 dayjs.extend(duration)
 
 const ChoreDetailsView = (
@@ -100,6 +100,8 @@ const ChoreDetailsViewInner = ({
     const router = useRouter()
     const ctx = api.useContext()
 
+    const { completeChore } = useCompleteChore(chore)
+
     const { mutate: updateChore, isLoading } = api.chores.update.useMutation({
         onSuccess: () => {
             toast(`Chore '${form.values.name}' updated!`)
@@ -150,6 +152,19 @@ const ChoreDetailsViewInner = ({
         chore.name.length > 14
             ? chore.name.substring(0, 10) + "..."
             : chore.name
+
+    const skipTo = async (date: DateValue) => {
+        if (date) await updateChore({ ...chore, deadline: date })
+        console.log(date)
+        modals.closeAll()
+    }
+    const completeOn = async (date: DateValue) => {
+        // TODO: Add loading spinner while completion is in flight and only close modal after success
+        if (date) await completeChore({ choreId: chore.id, completedAt: date })
+        console.log(date)
+        modals.closeAll()
+    }
+
     const openDeleteModal = () =>
         modals.openConfirmModal({
             title: `Delete '${chore.name}'?`,
@@ -161,70 +176,6 @@ const ChoreDetailsViewInner = ({
             onConfirm: async () => await deleteChore({ id: chore.id }),
             centered: true,
         })
-
-    const skipTo = async (date: DateValue) => {
-        if (date) await updateChore({ ...chore, deadline: date })
-        console.log(date)
-        modals.closeAll()
-    }
-    const openSkipModal = () => {
-        let skipDate: DateValue = chore.deadline
-        modals.open({
-            title: `Skip '${chore.name}' to`,
-            children: (
-                <>
-                    <Space h="xl" />
-                    <DateInput
-                        // Can't use controlled value here because modal doesn't update with re-renders
-                        defaultValue={skipDate}
-                        onChange={(value) => {
-                            skipDate = value
-                        }}
-                        mb={"350px"}
-                        label="Skip to"
-                        placeholder="Skip to"
-                        data-autofocus
-                    />
-                    <Group my={"xl"} position="center" grow>
-                        <Button
-                            onClick={() => skipTo(new Date())}
-                            color="yellow"
-                        >
-                            Skip to today
-                        </Button>
-                        <Button
-                            onClick={() => {
-                                const newDeadline = getNextDeadline(
-                                    chore.deadline,
-                                    chore.repeatIntervalMinutes
-                                )
-                                skipTo(newDeadline)
-                            }}
-                            color="orange"
-                        >
-                            Skip to next
-                        </Button>
-                    </Group>
-                    <Button
-                        fullWidth
-                        onClick={() => {
-                            console.log(skipDate)
-                            skipTo(skipDate)
-                        }}
-                        variant="gradient"
-                        gradient={{
-                            from: "yellow",
-                            to: "orange",
-                            deg: 60,
-                        }}
-                    >
-                        Skip
-                    </Button>
-                </>
-            ),
-            centered: true,
-        })
-    }
 
     const submitForm = () => {
         form.validate()
@@ -382,6 +333,9 @@ const ChoreDetailsViewInner = ({
                 <Center className="mt-8 border-y border-slate-400 p-4">
                     <Group spacing="xl">
                         <Button
+                            onClick={() =>
+                                openCustomCompletionModal(chore, completeOn)
+                            }
                             variant="gradient"
                             gradient={{
                                 from: "green",
@@ -393,7 +347,7 @@ const ChoreDetailsViewInner = ({
                             Custom Completion
                         </Button>
                         <Button
-                            onClick={openSkipModal}
+                            onClick={() => openSkipModal(chore, skipTo)}
                             variant="gradient"
                             gradient={{
                                 from: "yellow",
@@ -445,6 +399,110 @@ export const getServerSideProps = async (
             choreId,
         },
     }
+}
+
+const openCustomCompletionModal = (
+    chore: Chore,
+    completeOn: (date: DateValue) => Promise<void>
+) => {
+    let customCompletionDate: DateValue = new Date()
+    modals.open({
+        title: `Custom completion for '${chore.name}'`,
+        children: (
+            <>
+                <DateInput
+                    // Can't use controlled value here because modal doesn't update with re-renders
+                    defaultValue={customCompletionDate}
+                    onChange={(value) => {
+                        customCompletionDate = value
+                    }}
+                    mb={"350px"}
+                    label="Complete on"
+                    data-autofocus
+                />
+                <Button
+                    fullWidth
+                    onClick={() => {
+                        console.log(customCompletionDate)
+                        completeOn(customCompletionDate)
+                    }}
+                    variant="gradient"
+                    gradient={{
+                        from: "green",
+                        to: "teal",
+                        deg: 60,
+                    }}
+                >
+                    Complete on selected date
+                </Button>
+            </>
+        ),
+        centered: true,
+    })
+}
+
+const openSkipModal = (
+    chore: Chore,
+    skipTo: (date: DateValue) => Promise<void>
+) => {
+    let skipDate: DateValue = chore.deadline
+    modals.open({
+        title: `Skip '${chore.name}' to`,
+        children: (
+            <>
+                <Space h="xl" />
+                <DateInput
+                    // Can't use controlled value here because modal doesn't update with re-renders
+                    defaultValue={skipDate}
+                    onChange={(value) => {
+                        skipDate = value
+                    }}
+                    mb={"350px"}
+                    label="Skip to"
+                    data-autofocus
+                />
+                <Group my={"xl"} position="center" grow>
+                    <Button
+                        onClick={() => skipTo(new Date())}
+                        color="yellow"
+                        variant="outline"
+                    >
+                        Skip to today
+                    </Button>
+                    <Button
+                        onClick={() => {
+                            const newDeadline = getNextDeadline(
+                                chore.deadline,
+                                chore.repeatIntervalMinutes
+                            )
+                            skipTo(newDeadline)
+                        }}
+                        color="orange"
+                        variant="outline"
+                    >
+                        Skip to next
+                    </Button>
+                </Group>
+                <Space h="xs" />
+                <Button
+                    fullWidth
+                    onClick={() => {
+                        console.log(skipDate)
+                        skipTo(skipDate)
+                    }}
+                    variant="gradient"
+                    gradient={{
+                        from: "yellow",
+                        to: "orange",
+                        deg: 60,
+                    }}
+                >
+                    Skip
+                </Button>
+            </>
+        ),
+        centered: true,
+    })
 }
 
 export default ChoreDetailsView

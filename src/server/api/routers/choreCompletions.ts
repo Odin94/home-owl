@@ -3,10 +3,13 @@ import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis/nodejs"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
+import relativeTime from "dayjs/plugin/relativeTime"
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
 import { getNextDeadline } from "~/utils/utils"
+
 dayjs.extend(duration)
+dayjs.extend(relativeTime)
 
 // Allow 10 requests per 20s
 const ratelimit = new Ratelimit({
@@ -17,7 +20,12 @@ const ratelimit = new Ratelimit({
 
 export const choreCompletionsRouter = createTRPCRouter({
     create: protectedProcedure
-        .input(z.object({ choreId: z.string() }))
+        .input(
+            z.object({
+                choreId: z.string(),
+                completedAt: z.date().optional(),
+            })
+        )
         .mutation(async ({ ctx, input }) => {
             const me = await ctx.prisma.user.findUnique({
                 where: { clerkUserId: ctx.userId },
@@ -57,6 +65,7 @@ export const choreCompletionsRouter = createTRPCRouter({
                     choreName: chore.name,
                     chore: { connect: { id: chore.id } },
                     completedByUser: { connect: { id: me.id } },
+                    completedAt: input.completedAt,
                 },
             })
             const updateUserQuery = ctx.prisma.user.update({
@@ -67,9 +76,18 @@ export const choreCompletionsRouter = createTRPCRouter({
                 chore.deadline,
                 chore.repeatIntervalMinutes
             )
+
+            let updateChoreData = chore.shouldRepeat
+                ? { deadline: newDeadline }
+                : {}
+            const now = dayjs()
+            // Don't update deadline for custom completions in the past
+            if (dayjs(input.completedAt).isBefore(now, "day")) {
+                updateChoreData = {}
+            }
             const updateChoreQuery = ctx.prisma.chore.update({
                 where: { id: chore.id },
-                data: chore.shouldRepeat ? { deadline: newDeadline } : {},
+                data: updateChoreData,
             })
 
             const results = await ctx.prisma.$transaction([

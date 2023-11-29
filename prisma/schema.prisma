@@ -105,8 +105,9 @@ model Chore {
 }
 
 model ChoreCompletion {
-    id        String   @id @default(cuid())
-    createdAt DateTime @default(now())
+    id          String   @id @default(cuid())
+    createdAt   DateTime @default(now())
+    completedAt DateTime @default(now())
 
     chore     Chore?  @relation(fields: [choreId], references: [id], onDelete: SetNull)
     choreId   String?
