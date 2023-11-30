@@ -15,3 +15,8 @@ body {
     @apply bg-black text-slate-100;
     overscroll-behavior: none;
 }
+
+@font-face {
+  font-family: "Oleo Script";
+  src: local("Oleo Script"), url("../../public/OleoScript-Regular.ttf") format('truetype');
+}
