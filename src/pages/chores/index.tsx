@@ -46,6 +46,7 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
     const now = dayjs()
     const deadline = dayjs(chore.deadline)
     const isOverdue = deadline.isBefore(now, "day")
+    const isToday = deadline.isSame(now, "day")
 
     const { completeChore, isLoading, isCompleted, setIsCompleted } =
         useCompleteChore(chore)
@@ -103,12 +104,12 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
 
                             <Group position="apart">
                                 <Text c={isOverdue ? "red" : "black"}>
-                                    {!isOverdue
+                                    {!isOverdue && !isToday
                                         ? dayjs().localeData().weekdays()[
                                               deadline.weekday()
                                           ]
                                         : null}{" "}
-                                    {deadline.fromNow()}
+                                    {isToday ? "Today" : deadline.fromNow()}
                                 </Text>
                                 <Text c={"gray"}>{chore.points}pts</Text>
                             </Group>
