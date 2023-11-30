@@ -1,21 +1,25 @@
 import {
     Button,
     Center,
+    CloseButton,
     Collapse,
     Grid,
     Group,
+    Loader,
     Paper,
     Stack,
     Text,
     Title,
 } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
+import { modals } from "@mantine/modals"
 import { ChoreCompletion, User } from "@prisma/client"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { motion } from "framer-motion"
 import Head from "next/head"
 import { useRouter } from "next/router"
+import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
@@ -133,6 +137,42 @@ const CompletedChoreView = ({
 }: {
     choreCompletion: ChoreCompletion
 }) => {
+    const choreName = choreCompletion.choreName ?? ""
+    const shortChoreName =
+        choreName.length > 14 ? choreName.substring(0, 10) + "..." : choreName
+
+    const ctx = api.useContext()
+
+    const { mutate: deleteChore, isLoading } =
+        api.choreCompletions.delete.useMutation({
+            onSuccess: () => {
+                toast(`Deleted completion of ${shortChoreName}!`)
+                // TODOdin: This may lead to re-loading a lot of data - maybe load less data and only invalidate what you need to invalidate?
+                ctx.home.getUsersWithChoreCompletionsInMyHome.invalidate()
+            },
+            onError: (err) => {
+                console.log(err)
+                toast.error(
+                    `Failed to delete completion of ${shortChoreName}. Please try again!`
+                )
+            },
+        })
+
+    const openDeleteModal = () =>
+        modals.openConfirmModal({
+            title: `Undo completion of '${choreCompletion.choreName}'?`,
+            labels: {
+                confirm: `Undo completion of '${shortChoreName}'`,
+                cancel: "Cancel",
+            },
+            confirmProps: { color: "red" },
+            onConfirm: async () =>
+                await deleteChore({
+                    choreCompletionId: choreCompletion.id,
+                }),
+            centered: true,
+        })
+
     return (
         <motion.div
             style={{ y: 20, opacity: 0 }}
@@ -149,9 +189,16 @@ const CompletedChoreView = ({
                     <Group spacing="40px" className="flex">
                         <Stack spacing="0px" className="flex-grow">
                             {/* TODO: Adjust maw based on screen size */}
-                            <Title truncate order={4} maw={"500px"}>
-                                {choreCompletion.choreName}
-                            </Title>
+                            <Group position="apart">
+                                <Title truncate order={4} maw={"500px"}>
+                                    {choreCompletion.choreName}
+                                </Title>
+                                {isLoading ? (
+                                    <Loader color="gray" size="xs" />
+                                ) : (
+                                    <CloseButton onClick={openDeleteModal} />
+                                )}
+                            </Group>
 
                             <Group position="apart">
                                 <Text color="green">

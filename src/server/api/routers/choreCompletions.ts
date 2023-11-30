@@ -98,4 +98,55 @@ export const choreCompletionsRouter = createTRPCRouter({
 
             return results[0]
         }),
+    delete: protectedProcedure
+        .input(z.object({ choreCompletionId: z.string() }))
+        .mutation(async ({ ctx, input }) => {
+            const me = await ctx.prisma.user.findUnique({
+                where: { clerkUserId: ctx.userId },
+            })
+
+            if (!me) {
+                throw new TRPCError({
+                    code: "UNAUTHORIZED",
+                    message: "Own user not found",
+                })
+            }
+            if (!me.homeId) {
+                throw new TRPCError({
+                    code: "BAD_REQUEST",
+                    message: "You need to belong to a home to complete chores",
+                })
+            }
+            const { success } = await ratelimit.limit(ctx.userId)
+            if (!success) {
+                throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
+            }
+
+            const choreCompletion = await ctx.prisma.choreCompletion.findUnique(
+                {
+                    where: { id: input.choreCompletionId },
+                }
+            )
+            if (!choreCompletion) {
+                throw new TRPCError({
+                    code: "NOT_FOUND",
+                    message: `ChoreCompletion with id ${input.choreCompletionId} not found.`,
+                })
+            }
+
+            const deleteChoreQuery = ctx.prisma.choreCompletion.delete({
+                where: { id: input.choreCompletionId },
+            })
+            const updateUserQuery = ctx.prisma.user.update({
+                where: { id: me.id },
+                data: { points: me.points - choreCompletion.points },
+            })
+
+            const results = await ctx.prisma.$transaction([
+                deleteChoreQuery,
+                updateUserQuery,
+            ])
+
+            return results[0]
+        }),
 })

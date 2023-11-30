@@ -168,7 +168,7 @@ const CreateChoreWizard = () => {
 
                         <Switch
                             label="Repeat every"
-                            color="lime"
+                            color="red"
                             mt="md"
                             {...form.getInputProps("shouldRepeat", {
                                 type: "checkbox",
@@ -191,7 +191,7 @@ const CreateChoreWizard = () => {
                             <Center w={"65%"}>
                                 <SegmentedControl
                                     disabled={!form.values.shouldRepeat}
-                                    color="lime"
+                                    color="teal"
                                     mt="sm"
                                     data={[
                                         { label: "Days", value: "days" },

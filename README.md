@@ -22,10 +22,8 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 
 <!--
 TODOs:
-* Allow un-doing completions
 * Make page pretty on mobile
 * Make skipping chores snappier (remove delay from update function, but only for skipping)
-* Add login page
 * Add an export-all-data button
 
 Stretch goals:
