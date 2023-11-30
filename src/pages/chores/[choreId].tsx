@@ -45,8 +45,19 @@ dayjs.extend(duration)
 const ChoreDetailsView = (
     props: InferGetServerSidePropsType<typeof getServerSideProps>
 ) => {
+    const router = useRouter()
+
     const { choreId } = props
-    const { data: chore, isLoading } = api.chores.getById.useQuery({ choreId })
+    const { data: chore, isLoading } = api.chores.getById.useQuery(
+        { choreId },
+        {
+            onError: (err) => {
+                if (err.data?.code === "UNAUTHORIZED") {
+                    void router.push("/")
+                }
+            },
+        }
+    )
 
     if (isLoading) return <LoadingPage />
     if (!chore) return "Chore not found"

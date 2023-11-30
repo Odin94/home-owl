@@ -123,10 +123,16 @@ const CompletableChoreView = ({ chore }: { chore: Chore }) => {
 const ChoresView = () => {
     const router = useRouter()
 
-    const { data: chores, isLoading: isChoresLoading } =
-        api.chores.getMyChores.useQuery()
+    const {
+        data: chores,
+        isLoading: isChoresLoading,
+        error,
+    } = api.chores.getMyChores.useQuery()
 
     if (isChoresLoading) return <LoadingPage />
+    if (error?.data?.code === "UNAUTHORIZED") {
+        void router.push("/")
+    }
     if (!chores) return <div>Error: Failed to load chores</div>
 
     const now = dayjs()

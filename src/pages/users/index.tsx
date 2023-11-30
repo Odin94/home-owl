@@ -15,6 +15,7 @@ import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { motion } from "framer-motion"
 import Head from "next/head"
+import { useRouter } from "next/router"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
@@ -24,6 +25,8 @@ import { UserWithChoreCompletions } from "~/utils/types"
 dayjs.extend(relativeTime)
 
 const UsersView = () => {
+    const router = useRouter()
+
     const {
         data: usersWithChoreCompletions,
         isLoading,
@@ -31,6 +34,9 @@ const UsersView = () => {
     } = api.home.getUsersWithChoreCompletionsInMyHome.useQuery()
 
     if (isLoading) return <LoadingPage />
+    if (error?.data?.code === "UNAUTHORIZED") {
+        void router.push("/")
+    }
     if (!usersWithChoreCompletions) {
         console.log(error)
         return <div>Error: Failed to load</div>

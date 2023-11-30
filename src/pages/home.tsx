@@ -1,6 +1,7 @@
 import { useUser } from "@clerk/nextjs"
 import { Button, Center, Stack, Text } from "@mantine/core"
 import Head from "next/head"
+import { useRouter } from "next/router"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
@@ -136,12 +137,16 @@ const AddUserToHomeWizard = () => {
 }
 
 export default function HomeView() {
+    const router = useRouter()
     const { isLoaded: isUserLoaded, isSignedIn } = useUser()
 
     const { data: home, isLoading: isHomeLoading } =
         api.home.getMyHome.useQuery()
 
     if (isHomeLoading || !isUserLoaded) return <LoadingPage />
+    if (!isSignedIn) {
+        void router.push("/")
+    }
 
     return (
         <>

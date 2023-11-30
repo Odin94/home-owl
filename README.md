@@ -26,7 +26,7 @@ TODOs:
 * Make page pretty on mobile
 * Make skipping chores snappier (remove delay from update function, but only for skipping)
 * Add login page
-  * Make UNAUTHORIZED errors redirect to login page & don't show "logged in" pages to logged out users
+* Add an export-all-data button
 
 Stretch goals:
 * Add chore-edit-history (for tracking and undoing)
