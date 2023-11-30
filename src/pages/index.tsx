@@ -51,7 +51,7 @@ export default function LandingPage() {
                     </Title>
 
                     <Grid>
-                        <Grid.Col span={5}>
+                        <Grid.Col sm={5} xs={12}>
                             <Stack h={"100%"} justify="center">
                                 <Title order={2}>
                                     Home Owl ensures a fair distribution of
@@ -87,7 +87,7 @@ export default function LandingPage() {
                                 </div>
                             </Stack>
                         </Grid.Col>
-                        <Grid.Col span={6} offset={1}>
+                        <Grid.Col sm={6} xs={12} offsetXs={0} offsetSm={1}>
                             <Image
                                 src={"/ChoresScreenshot.png"}
                                 width={0}
