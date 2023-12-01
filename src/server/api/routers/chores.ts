@@ -1,10 +1,9 @@
-import { Prisma, PrismaClient } from "@prisma/client"
-import { DefaultArgs } from "@prisma/client/runtime/library"
 import { TRPCError } from "@trpc/server"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis/nodejs"
 import { z } from "zod"
 import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc"
+import { getChoresForUserOrThrow, getUserWithHomeOrThrow } from "./shared"
 
 // Allow 10 requests per 30s
 const ratelimit = new Ratelimit({
@@ -22,38 +21,9 @@ export const createChoreInput = z.object({
     repeatIntervalMinutes: z.number().int().min(0),
 })
 
-const getMyHomeIdOrError = async (ctx: {
-    prisma: PrismaClient<Prisma.PrismaClientOptions, never, DefaultArgs>
-    userId: string
-}) => {
-    const me = await ctx.prisma.user.findUnique({
-        where: { clerkUserId: ctx.userId },
-    })
-
-    if (!me) {
-        throw new TRPCError({
-            code: "UNAUTHORIZED",
-            message: "Own user not found",
-        })
-    }
-    if (!me.homeId) {
-        throw new TRPCError({
-            code: "BAD_REQUEST",
-            message: "You need to belong to a home to get chores",
-        })
-    }
-
-    return me.homeId
-}
-
 export const choresRouter = createTRPCRouter({
     getMyChores: protectedProcedure.query(async ({ ctx }) => {
-        const myHomeId = await getMyHomeIdOrError(ctx)
-
-        return await ctx.prisma.chore.findMany({
-            where: { homeId: myHomeId },
-            orderBy: [{ deadline: "asc" }],
-        })
+        return await getChoresForUserOrThrow(ctx)
     }),
 
     getById: protectedProcedure
@@ -63,13 +33,11 @@ export const choresRouter = createTRPCRouter({
             })
         )
         .query(async ({ ctx, input }) => {
-            const myHomeId = await getMyHomeIdOrError(ctx)
+            const myHomeId = (await getUserWithHomeOrThrow(ctx)).homeId
 
             const chore = await ctx.prisma.chore.findUnique({
-                // TODO: Make sure all chores are only accessible to their owners
                 where: { id: input.choreId, homeId: myHomeId },
             })
-
             if (!chore) {
                 throw new TRPCError({ code: "NOT_FOUND" })
             }
@@ -80,12 +48,13 @@ export const choresRouter = createTRPCRouter({
     create: protectedProcedure
         .input(createChoreInput)
         .mutation(async ({ ctx, input }) => {
-            const myHomeId = await getMyHomeIdOrError(ctx)
-
             const { success } = await ratelimit.limit(ctx.userId)
             if (!success) {
                 throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
             }
+
+            const me = await getUserWithHomeOrThrow(ctx)
+            const myHomeId = me.homeId
 
             const chore = await ctx.prisma.chore.create({
                 data: {
@@ -100,19 +69,21 @@ export const choresRouter = createTRPCRouter({
     update: protectedProcedure
         .input(createChoreInput.extend({ id: z.string().min(1) }))
         .mutation(async ({ ctx, input }) => {
-            const myHomeId = await getMyHomeIdOrError(ctx)
-
             const { success } = await ratelimit.limit(ctx.userId)
             if (!success) {
                 throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
             }
 
+            const myHomeId = (await getUserWithHomeOrThrow(ctx)).homeId
             const chore = await ctx.prisma.chore.update({
                 where: { homeId: myHomeId, id: input.id },
                 data: {
                     ...input,
                 },
             })
+            if (!chore) {
+                throw new TRPCError({ code: "NOT_FOUND" })
+            }
 
             return chore
         }),
@@ -120,7 +91,12 @@ export const choresRouter = createTRPCRouter({
     delete: protectedProcedure
         .input(z.object({ id: z.string().min(1) }))
         .mutation(async ({ ctx, input }) => {
-            const myHomeId = await getMyHomeIdOrError(ctx)
+            const { success } = await ratelimit.limit(ctx.userId)
+            if (!success) {
+                throw new TRPCError({ code: "TOO_MANY_REQUESTS" })
+            }
+
+            const myHomeId = (await getUserWithHomeOrThrow(ctx)).homeId
 
             await ctx.prisma.chore.delete({
                 where: { homeId: myHomeId, id: input.id },

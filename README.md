@@ -30,6 +30,7 @@ TODOs:
 Stretch goals:
 * Add chore-edit-history (for tracking and undoing)
 * Build a mobile / desktop app?
+  * Consider https://capacitorjs.com / https://github.com/emadgit/create-t3-mobile-app
  -->
 
 # Used tech

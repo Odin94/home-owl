@@ -54,11 +54,6 @@ const UsersView = () => {
 
             <PageLayout>
                 <LoginHeader />
-                {/* <Center className="border-b border-slate-400 p-4">
-                    <Text fz={"32px"} fw={"700"}>
-                        Users
-                    </Text>
-                </Center> */}
 
                 {usersWithChoreCompletions
                     .sort((a, b) => b.points - a.points)
@@ -137,6 +132,7 @@ const CompletedChoreView = ({
 }: {
     choreCompletion: ChoreCompletion
 }) => {
+    const { data: me } = api.user.getMyUser.useQuery()
     const choreName = choreCompletion.choreName ?? ""
     const shortChoreName =
         choreName.length > 14 ? choreName.substring(0, 10) + "..." : choreName
@@ -193,11 +189,24 @@ const CompletedChoreView = ({
                                 <Title truncate order={4} maw={"500px"}>
                                     {choreCompletion.choreName}
                                 </Title>
-                                {isLoading ? (
-                                    <Loader color="gray" size="xs" />
-                                ) : (
-                                    <CloseButton onClick={openDeleteModal} />
-                                )}
+                                {/* Only show delete button for own completions */}
+                                <div
+                                    style={{
+                                        visibility:
+                                            choreCompletion.completedByUserId ===
+                                            me?.id
+                                                ? "visible"
+                                                : "hidden",
+                                    }}
+                                >
+                                    {isLoading ? (
+                                        <Loader color="gray" size="xs" />
+                                    ) : (
+                                        <CloseButton
+                                            onClick={openDeleteModal}
+                                        />
+                                    )}
+                                </div>
                             </Group>
 
                             <Group position="apart">
