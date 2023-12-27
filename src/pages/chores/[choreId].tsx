@@ -42,12 +42,12 @@ import { useCompleteChore } from "../../utils/hooks"
 import CustomCompletionModal from "~/components/CustomCompletionModal"
 dayjs.extend(duration)
 
-const ChoreDetailsView = (
-    props: InferGetServerSidePropsType<typeof getServerSideProps>
-) => {
+const ChoreDetailsView = () => {
     const router = useRouter()
-
-    const { choreId } = props
+    const choreId = router.query.slug
+    if (typeof choreId !== "string") {
+        return "Selected chore is invalid"
+    }
     const { data: chore, isLoading } = api.chores.getById.useQuery(
         { choreId },
         {
@@ -403,29 +403,6 @@ const ChoreDetailsViewInner = ({
             </PageLayout>
         </>
     )
-}
-
-// Grab props serverside so that chore is available already when the page loads on the client
-// Must be exported to work!
-export const getServerSideProps = async (
-    ctx: GetServerSidePropsContext<{ choreId: string }>
-) => {
-    // TODO: Somehow session is null and we're getting UNAUTHORIZED when prefetching :(
-    const session = await getServerAuthSession(ctx)
-    const helpers = createSSRHelpers()
-
-    const choreId = ctx.params?.choreId
-    if (typeof choreId !== "string") throw new Error("no slug")
-
-    await helpers.chores.getById.prefetch({ choreId })
-
-    return {
-        props: {
-            session,
-            trpcState: helpers.dehydrate(),
-            choreId,
-        },
-    }
 }
 
 // TODO: Align this with CustomCompletionModal?
