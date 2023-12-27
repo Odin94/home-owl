@@ -5,10 +5,17 @@ Home Owl is a household chore tracker. Create (recurring) chores, mark them as c
 Home Owl makes it fun and easy to keep track of who does how much work around the house. To create a fair workload distribution and a happy and relaxed vibe around chores.
 
 
-## How to run
+## How to run web app
 * Create planetscale database, clerk auth & upstash redis -> fill `.env` file based on `.env.sample`
 * `docker compose up -d` to get local db running
 * `npm run dev` for running in dev mode
+
+
+## How to build Android app
+* `npm run build`  (and maybe `npx next export`)
+* `npx cap sync` to sync built web app to mobile apps
+* `npx cap open android` to open android studio, build and debug android app from there
+
 
 <!-- Notes to self
 * https://youtu.be/YkOSUVzOAA4
@@ -41,6 +48,8 @@ Stretch goals:
 -   [Vercel](vercel.com) for deployment
 -   [Clerk](https://clerk.com) for auth
     -   Next-auth
+-   [Capacitor](https://capacitorjs.com/) for generating mobile applications (atm only android)
+
 
 # Create T3 App
 
