@@ -26,10 +26,14 @@ export default async function handler(
     res: NextApiResponse
 ) {
     // We can use the response object to enable CORS
-    // res.setHeader('Access-Control-Allow-Origin', '*');
-    // res.setHeader('Access-Control-Request-Method', '*');
-    // res.setHeader('Access-Control-Allow-Methods', 'OPTIONS, GET, POST, PUT, DELETE');
-    // res.setHeader('Access-Control-Allow-Headers', '*');
+    // TODO: test if this is really needed for capacitorjs
+    res.setHeader("Access-Control-Allow-Origin", "*")
+    res.setHeader("Access-Control-Request-Method", "*")
+    res.setHeader(
+        "Access-Control-Allow-Methods",
+        "OPTIONS, GET, POST, PUT, DELETE"
+    )
+    res.setHeader("Access-Control-Allow-Headers", "*")
     // If you need to make authenticated CORS calls then
     // remove what is above and uncomment the below code
     // Allow-Origin has to be set to the requesting domain that you want to send the credentials back to
