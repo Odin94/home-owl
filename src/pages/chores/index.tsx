@@ -130,11 +130,33 @@ const ChoresView = () => {
         error,
     } = api.chores.getMyChores.useQuery()
 
-    if (isChoresLoading) return <LoadingPage />
+    if (isChoresLoading)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <LoadingPage />
+            </PageLayout>
+        )
+
     if (error?.data?.code === "UNAUTHORIZED") {
         void router.push("/")
     }
-    if (!chores) return <div>Error: Failed to load chores</div>
+    if (error)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <div>
+                    Error: {error.message} with {JSON.stringify(error)}
+                </div>
+            </PageLayout>
+        )
+    if (!chores)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <div>Error: Failed to load chores from {router.basePath}</div>
+            </PageLayout>
+        )
 
     const now = dayjs()
     const openChores = chores.filter(
