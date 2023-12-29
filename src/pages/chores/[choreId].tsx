@@ -59,7 +59,13 @@ const ChoreDetailsView = () => {
         }
     )
 
-    if (isLoading) return <LoadingPage />
+    if (isLoading)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <LoadingPage />
+            </PageLayout>
+        )
     if (!chore) return "Chore not found"
 
     return <ChoreDetailsViewInner chore={chore} />

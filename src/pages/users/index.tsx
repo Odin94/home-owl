@@ -37,7 +37,13 @@ const UsersView = () => {
         error,
     } = api.home.getUsersWithChoreCompletionsInMyHome.useQuery()
 
-    if (isLoading) return <LoadingPage />
+    if (isLoading)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <LoadingPage />
+            </PageLayout>
+        )
     if (error?.data?.code === "UNAUTHORIZED") {
         void router.push("/")
     }

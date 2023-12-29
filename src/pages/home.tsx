@@ -140,10 +140,14 @@ export default function HomeView() {
     const router = useRouter()
     const { isLoaded: isUserLoaded, isSignedIn } = useUser()
 
-    const { data: home, isLoading: isHomeLoading } =
-        api.home.getMyHome.useQuery()
+    const {
+        data: home,
+        isLoading: isHomeLoading,
+        error,
+    } = api.home.getMyHome.useQuery()
 
     if (isHomeLoading || !isUserLoaded) return <LoadingPage />
+    if (error) return <div>Error: {error.message}</div>
     if (!isSignedIn) {
         void router.push("/")
     }
