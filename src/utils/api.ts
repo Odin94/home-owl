@@ -4,13 +4,16 @@
  *
  * We also create a few inference helpers for input and output types.
  */
+import { Capacitor } from "@capacitor/core"
 import { httpBatchLink, loggerLink } from "@trpc/client"
 import { createTRPCNext } from "@trpc/next"
 import { type inferRouterInputs, type inferRouterOutputs } from "@trpc/server"
 import superjson from "superjson"
 import { type AppRouter } from "~/server/api/root"
 
-const getBaseUrl = () => {
+export const getBaseUrl = () => {
+    // TODO: Use env var or something instead of hardcoded https://home-owl.odin-matthias.de
+    if (Capacitor.isNativePlatform()) return `https://home-owl.odin-matthias.de`
     if (typeof window !== "undefined") return "" // browser should use relative url
     if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}` // SSR should use vercel url
     return `http://localhost:${process.env.PORT ?? 3000}` // dev SSR should use localhost
@@ -41,6 +44,13 @@ export const api = createTRPCNext<AppRouter>({
                 }),
                 httpBatchLink({
                     url: `${getBaseUrl()}/api/trpc`,
+                    fetch(url, options) {
+                        return fetch(url, {
+                            ...options,
+                            // include cookies even for cross-origin requests (needed cause capacitor app has different origin)
+                            credentials: "include",
+                        })
+                    },
                 }),
             ],
         }

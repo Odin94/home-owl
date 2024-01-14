@@ -3,6 +3,7 @@ import { NextApiRequest, NextApiResponse } from "next"
 import { env } from "~/env.mjs"
 import { appRouter } from "~/server/api/root"
 import { createTRPCContext } from "~/server/api/trpc"
+import { getBaseUrl } from "~/utils/api"
 
 // export API handler
 const nextApiHandler = createNextApiHandler({
@@ -25,9 +26,22 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
+    // TODOdin: Pretty sure the issue with trpc + capacitor atm is cors (405 error on OPTIONS request)
+    const allowedOrigins = [
+        "capacitor://nextjs-native.dev",
+        "capacitor://localhost",
+        "http://localhost:3000",
+        "https://localhost:3000",
+        "https://localhost",
+        process.env.VERCEL_URL
+            ? `https://${process.env.VERCEL_URL}`
+            : getBaseUrl(),
+    ]
     // We can use the response object to enable CORS
-    // TODO: test if this is really needed for capacitorjs
-    res.setHeader("Access-Control-Allow-Origin", "*")
+    if (allowedOrigins.includes(origin)) {
+        res.setHeader("Access-Control-Allow-Origin", origin)
+    }
+
     res.setHeader("Access-Control-Request-Method", "*")
     res.setHeader(
         "Access-Control-Allow-Methods",
@@ -43,10 +57,10 @@ export default async function handler(
     // res.setHeader('Access-Control-Allow-Headers', 'content-type');
     // res.setHeader('Referrer-Policy', 'no-referrer');
     res.setHeader("Access-Control-Allow-Credentials", "true")
-    // if (req.method === 'OPTIONS') {
-    //   res.writeHead(200);
-    //   return res.end();
-    // }
+    if (req.method === "OPTIONS") {
+        res.writeHead(200)
+        return res.end()
+    }
     // finally pass the request on to the tRPC handler
     return nextApiHandler(req, res)
 }
