@@ -26,7 +26,6 @@ export default async function handler(
     req: NextApiRequest,
     res: NextApiResponse
 ) {
-    // TODOdin: Pretty sure the issue with trpc + capacitor atm is cors (405 error on OPTIONS request)
     const allowedOrigins = [
         "capacitor://nextjs-native.dev",
         "capacitor://localhost",
@@ -37,11 +36,13 @@ export default async function handler(
             ? `https://${process.env.VERCEL_URL}`
             : getBaseUrl(),
     ]
-    // We can use the response object to enable CORS
+
+    const origin = req.headers.host ?? ""
     if (allowedOrigins.includes(origin)) {
         res.setHeader("Access-Control-Allow-Origin", origin)
     }
 
+    // We can use the response object to enable CORS
     res.setHeader("Access-Control-Request-Method", "*")
     res.setHeader(
         "Access-Control-Allow-Methods",
