@@ -6,7 +6,7 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 
 
 ## How to run web app
-* Create planetscale database, clerk auth & upstash redis -> fill `.env` file based on `.env.sample`
+* Clerk auth & upstash redis -> fill `.env` file based on `.env.sample`
 * `docker compose up -d` to get local db running
 * `npm run dev` for running in dev mode
 
@@ -43,7 +43,7 @@ Stretch goals:
 # Used tech
 
 -   [T3 Stack](https://create.t3.gg/) / `create-t3-app` to initialize project
--   [[Planetscale](https://planetscale.com) for database
+-   TODO: Replace Planetscale since their free-tier is gone [[Planetscale](https://planetscale.com) for database
     -   Prisma ORM (`npx prisma studio`, `npx prisma db push`)
 -   [Vercel](vercel.com) for deployment
 -   [Clerk](https://clerk.com) for auth
