@@ -12,10 +12,10 @@ Home Owl makes it fun and easy to keep track of who does how much work around th
 
 
 ## How to build Android app
-* `npm run build`  (and maybe `npx next export`)
+* `npm run static` to produce a static frontend build (must be static for capacitor)
 * `npx cap sync` to sync built web app to mobile apps
 * `npx cap open android` to open android studio, build and debug android app from there
-
+* Use chrome debugger (vivaldi://inspect/#devices) for debugging https://capacitorjs.com/docs/vscode/debugging
 
 <!-- Notes to self
 * https://youtu.be/YkOSUVzOAA4

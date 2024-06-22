@@ -1,13 +1,6 @@
+import { Capacitor } from "@capacitor/core"
 import { SignInButton, useUser } from "@clerk/nextjs"
-import {
-    Button,
-    Container,
-    Grid,
-    Group,
-    Stack,
-    Text,
-    Title,
-} from "@mantine/core"
+import { Button, Container, Grid, Stack, Text, Title } from "@mantine/core"
 import Head from "next/head"
 import Image from "next/image"
 import { useRouter } from "next/router"
@@ -17,7 +10,12 @@ export default function LandingPage() {
     const router = useRouter()
     const { isLoaded: userLoaded, isSignedIn } = useUser()
 
-    if (!userLoaded) return <LoadingPage />
+    // TODOdin
+    // if (Capacitor.isNativePlatform() && isSignedIn) {
+    //     router.push("/chores")
+    // }
+
+    // if (!userLoaded) return <LoadingPage />
 
     return (
         <>

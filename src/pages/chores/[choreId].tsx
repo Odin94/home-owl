@@ -22,15 +22,12 @@ import {
 } from "@tabler/icons-react"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
-import { GetServerSidePropsContext, InferGetServerSidePropsType } from "next"
 import Head from "next/head"
 import { useRouter } from "next/router"
 import toast from "react-hot-toast"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
-import { getServerAuthSession } from "~/server/auth"
-import { createSSRHelpers } from "~/server/utils"
 import { api } from "~/utils/api"
 import { getNextDeadline } from "~/utils/utils"
 import {
@@ -44,10 +41,13 @@ dayjs.extend(duration)
 
 const ChoreDetailsView = () => {
     const router = useRouter()
-    const choreId = router.query.slug
-    if (typeof choreId !== "string") {
-        return "Selected chore is invalid"
-    }
+    let choreId = router.query.slug
+
+    // TODO: Fix next no longer hot-reloading; is it launching the static thingy with npm start now?
+    // TODO: Fix typing for choreId, current handling is very inelegant
+    if (typeof choreId !== "string") choreId = ""
+    console.log(choreId)
+
     const { data: chore, isLoading } = api.chores.getById.useQuery(
         { choreId },
         {
@@ -56,6 +56,7 @@ const ChoreDetailsView = () => {
                     void router.push("/")
                 }
             },
+            // enabled: typeof choreId === "string" && choreId.length > 0,
         }
     )
 
@@ -66,7 +67,13 @@ const ChoreDetailsView = () => {
                 <LoadingPage />
             </PageLayout>
         )
-    if (!chore) return "Chore not found"
+    if (!chore)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <div>Chore not found</div>
+            </PageLayout>
+        )
 
     return <ChoreDetailsViewInner chore={chore} />
 }

@@ -146,8 +146,21 @@ export default function HomeView() {
         error,
     } = api.home.getMyHome.useQuery()
 
-    if (isHomeLoading || !isUserLoaded) return <LoadingPage />
-    if (error) return <div>Error: {error.message}</div>
+    if (isHomeLoading || !isUserLoaded)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <LoadingPage />
+            </PageLayout>
+        )
+    if (error)
+        return (
+            <PageLayout>
+                <LoginHeader />
+                <div>Error: {error.message}</div>
+            </PageLayout>
+        )
+
     if (!isSignedIn) {
         void router.push("/")
     }
