@@ -2,6 +2,7 @@
     "name": "home-owl",
     "version": "0.1.0",
     "private": true,
+    "type": "module",
     "scripts": {
         "build": "next build",
         "dev": "next dev",
@@ -9,12 +10,14 @@
         "lint": "next lint",
         "prettier:format": "prettier . --write",
         "start": "next start",
-        "static": "next build && next export"
+        "static": "next build && next export",
+        "fastify": "tsx pure-backend/server.ts"
     },
     "dependencies": {
         "@capacitor/android": "^5.6.0",
         "@capacitor/cli": "^5.6.0",
         "@capacitor/core": "^5.6.0",
+        "@clerk/fastify": "^1.0.15",
         "@clerk/nextjs": "^4.23.3",
         "@emotion/react": "^11.11.1",
         "@emotion/server": "^11.11.0",
@@ -36,18 +39,21 @@
         "@upstash/ratelimit": "^0.4.4",
         "@upstash/redis": "^1.22.0",
         "dayjs": "^1.11.9",
+        "fastify": "^4.28.0",
+        "fastify-type-provider-zod": "^1.2.0",
         "framer-motion": "^10.16.4",
         "next": "^13.4.19",
         "next-auth": "^4.23.1",
+        "prisma-zod-generator": "^0.8.13",
         "react": "18.2.0",
         "react-dom": "18.2.0",
         "react-hot-toast": "^2.4.1",
         "superjson": "^1.13.1",
-        "zod": "^3.21.4"
+        "zod": "^3.23.8"
     },
     "devDependencies": {
         "@types/eslint": "^8.37.0",
-        "@types/node": "^18.16.0",
+        "@types/node": "^18.19.39",
         "@types/prettier": "^2.7.2",
         "@types/react": "^18.2.6",
         "@types/react-dom": "^18.2.4",
@@ -61,7 +67,8 @@
         "prettier-plugin-tailwindcss": "^0.2.8",
         "prisma": "^5.1.1",
         "tailwindcss": "^3.3.3",
-        "typescript": "^5.0.4"
+        "tsx": "^4.15.7",
+        "typescript": "^5.5.2"
     },
     "ct3aMetadata": {
         "initVersion": "7.18.0"
