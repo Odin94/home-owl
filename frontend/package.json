@@ -1,0 +1,69 @@
+{
+  "name": "frontend",
+  "version": "0.1.0",
+  "private": true,
+  "dependencies": {
+    "@clerk/clerk-react": "^5.2.5",
+    "@mantine/core": "^7.10.2",
+    "@mantine/dates": "^7.10.2",
+    "@mantine/form": "^7.10.2",
+    "@mantine/hooks": "^7.10.2",
+    "@mantine/modals": "^7.10.2",
+    "@tabler/icons-react": "^3.6.0",
+    "@tanstack/react-query": "^5.45.1",
+    "@testing-library/jest-dom": "^5.17.0",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/user-event": "^13.5.0",
+    "@types/jest": "^27.5.2",
+    "@types/node": "^16.18.101",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-helmet": "^6.1.11",
+    "dayjs": "^1.11.11",
+    "dotenv": "^16.4.5",
+    "prettier-plugin-tailwindcss": "^0.6.5",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "react-helmet": "^6.1.0",
+    "react-hot-toast": "^2.4.1",
+    "react-scripts": "5.0.1",
+    "typescript": "^4.9.5",
+    "web-vitals": "^2.1.4"
+  },
+  "scripts": {
+    "start": "npm run generate-routes && craco start",
+    "test": "craco test",
+    "eject": "craco eject",
+    "generate-routes": "tsr generate",
+    "watch-routes": "tsr watch",
+    "build": "npm run generate-routes && craco build",
+    "dev": "npm run watch-routes && craco start"
+  },
+  "eslintConfig": {
+    "extends": [
+      "react-app",
+      "react-app/jest"
+    ]
+  },
+  "browserslist": {
+    "production": [
+      ">0.2%",
+      "not dead",
+      "not op_mini all"
+    ],
+    "development": [
+      "last 1 chrome version",
+      "last 1 firefox version",
+      "last 1 safari version"
+    ]
+  },
+  "devDependencies": {
+    "@craco/craco": "^7.1.0",
+    "@tanstack/eslint-plugin-query": "^5.43.1",
+    "@tanstack/router-cli": "^1.37.0",
+    "@tanstack/router-devtools": "^1.40.0",
+    "@tanstack/router-plugin": "^1.39.13",
+    "prettier": "3.3.2",
+    "tsconfig-paths": "^4.2.0"
+  }
+}
