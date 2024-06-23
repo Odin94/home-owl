@@ -1,3 +1,5 @@
+import 'dotenv/config'
+
 import Fastify, { FastifyInstance, RouteShorthandOptions } from "fastify"
 import { Server, IncomingMessage, ServerResponse } from "http"
 import {
@@ -7,8 +9,15 @@ import {
 } from "fastify-type-provider-zod"
 import { z } from "zod"
 import { clerkPlugin } from "@clerk/fastify"
+import { registerHomes } from "./routes/homes";
+import { PrismaClient } from "@prisma/client";
+import { registerProfiles } from "./routes/profile";
 
 const server: FastifyInstance = Fastify({ logger: true })
+
+console.log("////////////////")
+console.log(process.env["CLERK_SECRET_KEY"])
+console.log("////////////////")
 
 server.register(clerkPlugin)
 
@@ -31,6 +40,10 @@ server.withTypeProvider<ZodTypeProvider>().route({
         res.send(req.query.name)
     },
 })
+
+const prisma = new PrismaClient()
+registerHomes(server, prisma)
+registerProfiles(server, prisma)
 
 const start = async () => {
     try {

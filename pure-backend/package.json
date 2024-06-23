@@ -1,0 +1,31 @@
+{
+  "name": "home-owl-backend",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "postinstall": "prisma generate",
+    "start": "tsx ./src/server.ts"
+  },
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "dependencies": {
+    "@clerk/fastify": "^1.0.15",
+    "@prisma/client": "^5.15.1",
+    "@upstash/ratelimit": "^1.2.1",
+    "@upstash/redis": "^1.31.6",
+    "dotenv": "^16.4.5",
+    "fastify": "^4.28.0",
+    "fastify-plugin": "^4.5.1",
+    "fastify-type-provider-zod": "^1.2.0",
+    "zod": "^3.23.8",
+    "zod-prisma": "^0.5.4"
+  },
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/node": "^20.14.8",
+    "prisma": "^5.15.1",
+    "tsx": "^4.15.7",
+    "typescript": "^5.5.2"
+  }
+}

@@ -12,17 +12,17 @@ import {
 } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
 import { PageLayout } from "~/components/layout"
-import { fetchGetMyHome } from "~/queries"
+import { fetchGetMyHome } from "~/utils/queries"
 import { HomeWithUsers } from "~/utils/types"
 
-export const Route: any = createFileRoute("/home")({
+export const Route = createFileRoute("/home")({
     component: HomeView,
 })
 
 const ExistingHomeView = ({ home }: { home: HomeWithUsers }) => {
     return (
         <div>
-            {home.users.map((user: any) => (
+            {home.users.map((user) => (
                 <UserView user={user} />
             ))}
 
@@ -34,6 +34,7 @@ const ExistingHomeView = ({ home }: { home: HomeWithUsers }) => {
 }
 
 const CreateHomeWizard = () => {
+    alert("WIZARD")
     const { mutate, isPending: isPosting } = useMutation({
         mutationFn: async () => {
             alert("Not yet implemented")

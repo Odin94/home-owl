@@ -4,7 +4,7 @@ import { IconHome, IconSettings, IconUsers } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { fetchCreateUser, fetchGetMyUser } from "~/queries"
+import { fetchCreateUser, fetchGetMyUser } from "~/utils/queries"
 
 const LoginHeader = () => {
     const { isLoaded: isClerkUserLoaded, isSignedIn } = useUser()

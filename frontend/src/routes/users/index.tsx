@@ -27,7 +27,7 @@ import {
     fetchDeleteChoreCompletion,
     fetchGetMyUser,
     fetchGetUsersWithChoreCompletionsInMyHome,
-} from "~/queries"
+} from "~/utils/queries"
 import { ChoreCompletion, UserWithChoreCompletions } from "~/utils/types"
 
 dayjs.extend(relativeTime)

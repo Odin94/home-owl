@@ -28,7 +28,7 @@ const queryClient = new QueryClient()
 const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY!
 
 const App = () => {
-    const navigate = useNavigate()
+    const navigate = router.navigate
 
     return (
         <ClerkProvider

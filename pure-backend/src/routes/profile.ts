@@ -1,9 +1,11 @@
-import { clerkClient } from "@clerk/nextjs"
+import * as dotenv from "dotenv"
+dotenv.config()
+import { clerkClient } from "@clerk/fastify"
 import { PrismaClient } from "@prisma/client"
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
 import { z } from "zod"
-import { filterUserForClient } from "~/server/utils"
+import { filterUserForClient } from "~/utils"
 import { NOT_FOUND } from "./shared"
 
 export const PublicUserSchema = {
@@ -21,16 +23,16 @@ export const registerProfiles = (
         method: "GET",
         url: "/profiles/getUserByUsername",
         schema: {
-            body: z.object({ username: z.string() }),
+            params: z.object({ username: z.string() }),
             response: {
                 200: PublicUserSchema,
                 404: z.string(),
             },
         },
         handler: async (req, res) => {
-            const [user] = await clerkClient.users.getUserList({
-                username: [req.body.username],
-            })
+            const [user] = (await clerkClient.users.getUserList({
+                username: [req.params.username],
+            })).data
 
             if (!user) {
                 return res.code(NOT_FOUND).send("User not found")

@@ -22,7 +22,7 @@ import { Helmet } from "react-helmet"
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import { Chore } from "~/utils/types"
 import { useQuery } from "@tanstack/react-query"
-import { fetchGetMyChores } from "~/queries"
+import { fetchGetMyChores } from "~/utils/queries"
 
 dayjs.extend(localeData)
 dayjs.extend(weekday)
@@ -41,7 +41,7 @@ const completableChoreVariants = {
 }
 
 export const Route = createFileRoute("/chores/")({
-    component: CompletableChoreView,
+    component: ChoresView,
 })
 
 function CompletableChoreView({ chore }: { chore: Chore }) {
@@ -125,7 +125,7 @@ function CompletableChoreView({ chore }: { chore: Chore }) {
     )
 }
 
-const ChoresView = () => {
+function ChoresView() {
     const navigate = useNavigate()
 
     const {

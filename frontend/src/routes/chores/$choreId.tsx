@@ -27,13 +27,22 @@ import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
 import { getNextDeadline } from "~/utils/utils"
 import { CreateChoreFormValues, createChoreSchema } from "./createChore"
-import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
+import {
+    createFileRoute,
+    useNavigate,
+    Link,
+    useParams,
+} from "@tanstack/react-router"
 import { useCompleteChore } from "../../utils/hooks"
 import CustomCompletionModal from "~/components/CustomCompletionModal"
 import { Chore, ChoreGetPayload, CreateChoreSubmitValues } from "~/utils/types"
 import { Helmet } from "react-helmet"
 import { useMutation, useQuery } from "@tanstack/react-query"
-import { fetchDeleteChore, fetchGetChore, fetchUpdateChore } from "~/queries"
+import {
+    fetchDeleteChore,
+    fetchGetChore,
+    fetchUpdateChore,
+} from "~/utils/queries"
 dayjs.extend(duration)
 
 export const Route = createFileRoute("/chores/$choreId")({
@@ -41,7 +50,7 @@ export const Route = createFileRoute("/chores/$choreId")({
 })
 
 function ChoreDetailsView() {
-    let { choreId } = Route.useParams()
+    let { choreId } = useParams({ strict: false })
     const navigate = useNavigate()
 
     // TODO: Fix next no longer hot-reloading; is it launching the static thingy with npm start now?

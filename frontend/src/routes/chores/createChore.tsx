@@ -20,7 +20,7 @@ import toast from "react-hot-toast"
 import { z } from "zod"
 import LoginHeader from "~/components/Header"
 import { PageLayout } from "~/components/layout"
-import { fetchCreateChore } from "~/queries"
+import { fetchCreateChore } from "~/utils/queries"
 import { CreateChoreSubmitValues } from "~/utils/types"
 
 dayjs.extend(duration)

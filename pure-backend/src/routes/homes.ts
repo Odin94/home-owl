@@ -1,13 +1,11 @@
 import { getAuth } from "@clerk/fastify"
-import { clerkClient } from "@clerk/nextjs"
+import { clerkClient } from "@clerk/fastify"
 import { PrismaClient } from "@prisma/client"
 import { Ratelimit } from "@upstash/ratelimit"
-import { Redis } from "@upstash/redis/nodejs"
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { ChoreModel, HomeModel, UserModel } from "prisma/generated/models"
+import { ChoreModel, HomeModel, UserModel } from "~prisma/generated/models"
 import { z } from "zod"
-import { filterUserForClient } from "~/server/utils"
 import {
     BAD_REQUEST,
     CONFLICT,
@@ -16,6 +14,8 @@ import {
     TOO_MANY_REQUESTS,
     UNPROCESSABLE_CONTENT,
 } from "./shared"
+import { filterUserForClient } from "~/utils"
+import { Redis } from "@upstash/redis"
 
 // Allow 3 requests per 2 hours
 const ratelimit = new Ratelimit({
@@ -50,12 +50,13 @@ const addClerkUserDataToHome = async (
 ): Promise<ExtendedHomeWithClerk> => {
     if (!home) return null
 
+    // getUserList returns a paginated result, which may become an issue if there's a large amount of users in a home
     const users = (
         await clerkClient.users.getUserList({
             userId: home.users.map((u) => u.clerkUserId),
             limit: 100,
         })
-    ).map(filterUserForClient)
+    ).data.map(filterUserForClient)
 
     return {
         ...home,

@@ -14,7 +14,21 @@ export type ChoreGetPayload = Chore
 
 export type CreateChoreSubmitValues = any //z.infer<typeof createChoreInput>
 
-export type ChoreCompletion = any
+export const ChoreCompletionModel = z.object({
+    id: z.string(),
+    choreId: z.string(),
+    completedAt: z.date(),
+    points: z.number().positive(),
+    completedByUserId: z.string(),
+    choreName: z.string(),
+})
+
+export type ChoreCompletion = z.infer<typeof ChoreCompletionModel>
+
+export type ChoreCompletionInput = {
+    choreId: string
+    completedAt?: any
+}
 
 export const ChoreModel = z.object({})
 
