@@ -11,6 +11,7 @@
   "description": "",
   "dependencies": {
     "@clerk/fastify": "^1.0.15",
+    "@fastify/cors": "^9.0.1",
     "@prisma/client": "^5.15.1",
     "@upstash/ratelimit": "^1.2.1",
     "@upstash/redis": "^1.31.6",

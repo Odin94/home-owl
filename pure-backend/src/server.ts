@@ -7,6 +7,7 @@ import {
     validatorCompiler,
     ZodTypeProvider,
 } from "fastify-type-provider-zod"
+import cors from '@fastify/cors'
 import { z } from "zod"
 import { clerkPlugin } from "@clerk/fastify"
 import { registerHomes } from "./routes/homes";
@@ -15,11 +16,20 @@ import { registerProfiles } from "./routes/profile";
 
 const server: FastifyInstance = Fastify({ logger: true })
 
-console.log("////////////////")
-console.log(process.env["CLERK_SECRET_KEY"])
-console.log("////////////////")
-
 server.register(clerkPlugin)
+await server.register(cors, { 
+    origin: (origin, cb) => {
+        if (!origin) return
+        const hostname = new URL(origin).hostname
+        if(hostname === "localhost" || hostname === "*.odin-matthias.de"){
+          //  Request from localhost will pass
+          cb(null, true)
+          return
+        }
+        // Generate an error on other origins, disabling access
+        cb(new Error("Not allowed"), false)
+      }
+  })
 
 server.setValidatorCompiler(validatorCompiler)
 server.setSerializerCompiler(serializerCompiler)
