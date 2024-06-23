@@ -13,6 +13,10 @@
 import { Route as rootRoute } from './routes/__root'
 import { Route as LandingImport } from './routes/landing'
 import { Route as HomeImport } from './routes/home'
+import { Route as UsersIndexImport } from './routes/users/index'
+import { Route as ChoresIndexImport } from './routes/chores/index'
+import { Route as ChoresCreateChoreImport } from './routes/chores/createChore'
+import { Route as ChoresChoreIdImport } from './routes/chores/$choreId'
 
 // Create/Update Routes
 
@@ -23,6 +27,26 @@ const LandingRoute = LandingImport.update({
 
 const HomeRoute = HomeImport.update({
   path: '/home',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const UsersIndexRoute = UsersIndexImport.update({
+  path: '/users/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ChoresIndexRoute = ChoresIndexImport.update({
+  path: '/chores/',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ChoresCreateChoreRoute = ChoresCreateChoreImport.update({
+  path: '/chores/createChore',
+  getParentRoute: () => rootRoute,
+} as any)
+
+const ChoresChoreIdRoute = ChoresChoreIdImport.update({
+  path: '/chores/$choreId',
   getParentRoute: () => rootRoute,
 } as any)
 
@@ -44,12 +68,47 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LandingImport
       parentRoute: typeof rootRoute
     }
+    '/chores/$choreId': {
+      id: '/chores/$choreId'
+      path: '/chores/$choreId'
+      fullPath: '/chores/$choreId'
+      preLoaderRoute: typeof ChoresChoreIdImport
+      parentRoute: typeof rootRoute
+    }
+    '/chores/createChore': {
+      id: '/chores/createChore'
+      path: '/chores/createChore'
+      fullPath: '/chores/createChore'
+      preLoaderRoute: typeof ChoresCreateChoreImport
+      parentRoute: typeof rootRoute
+    }
+    '/chores/': {
+      id: '/chores/'
+      path: '/chores'
+      fullPath: '/chores'
+      preLoaderRoute: typeof ChoresIndexImport
+      parentRoute: typeof rootRoute
+    }
+    '/users/': {
+      id: '/users/'
+      path: '/users'
+      fullPath: '/users'
+      preLoaderRoute: typeof UsersIndexImport
+      parentRoute: typeof rootRoute
+    }
   }
 }
 
 // Create and export the route tree
 
-export const routeTree = rootRoute.addChildren({ HomeRoute, LandingRoute })
+export const routeTree = rootRoute.addChildren({
+  HomeRoute,
+  LandingRoute,
+  ChoresChoreIdRoute,
+  ChoresCreateChoreRoute,
+  ChoresIndexRoute,
+  UsersIndexRoute,
+})
 
 /* prettier-ignore-end */
 
@@ -60,7 +119,11 @@ export const routeTree = rootRoute.addChildren({ HomeRoute, LandingRoute })
       "filePath": "__root.tsx",
       "children": [
         "/home",
-        "/landing"
+        "/landing",
+        "/chores/$choreId",
+        "/chores/createChore",
+        "/chores/",
+        "/users/"
       ]
     },
     "/home": {
@@ -68,6 +131,18 @@ export const routeTree = rootRoute.addChildren({ HomeRoute, LandingRoute })
     },
     "/landing": {
       "filePath": "landing.tsx"
+    },
+    "/chores/$choreId": {
+      "filePath": "chores/$choreId.tsx"
+    },
+    "/chores/createChore": {
+      "filePath": "chores/createChore.tsx"
+    },
+    "/chores/": {
+      "filePath": "chores/index.tsx"
+    },
+    "/users/": {
+      "filePath": "users/index.tsx"
     }
   }
 }

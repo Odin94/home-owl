@@ -1,9 +1,6 @@
 import { Button, Loader, Modal } from "@mantine/core"
 import { DateInput, DateValue } from "@mantine/dates"
-
-type Chore = {
-    name: string
-}
+import { Chore } from "~/utils/types"
 
 export type CustomCompletionModalProps = {
     chore: Chore

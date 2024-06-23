@@ -12,8 +12,8 @@ import {
 } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
 import { PageLayout } from "~/components/layout"
-
-type HomeWithUsers = any
+import { fetchGetMyHome } from "~/queries"
+import { HomeWithUsers } from "~/utils/types"
 
 export const Route: any = createFileRoute("/home")({
     component: HomeView,
@@ -153,9 +153,7 @@ function HomeView() {
         error,
     } = useQuery({
         queryKey: ["myHome"],
-        queryFn: async () => {
-            // api.home.getMyHome
-        },
+        queryFn: fetchGetMyHome,
     })
 
     if (isHomeLoading || !isUserLoaded)
@@ -174,7 +172,9 @@ function HomeView() {
         )
 
     if (!isSignedIn) {
+        console.log("Not logged in, navigating to /")
         navigate({ to: "/" })
+        return
     }
 
     return (

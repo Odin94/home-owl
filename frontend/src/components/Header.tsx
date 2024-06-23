@@ -4,6 +4,7 @@ import { IconHome, IconSettings, IconUsers } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
 import { Link } from "@tanstack/react-router"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { fetchCreateUser, fetchGetMyUser } from "~/queries"
 
 const LoginHeader = () => {
     const { isLoaded: isClerkUserLoaded, isSignedIn } = useUser()
@@ -11,21 +12,15 @@ const LoginHeader = () => {
     const queryClient = useQueryClient()
 
     const { data: prismaUser, isLoading: isPrismaUserLoading } = useQuery({
+        // TODO: Should prismaUser and other fetchGetMyuser be different?
         queryKey: ["prismaUser"],
-        queryFn: async () => {
-            alert("Not yet imlpemented")
-            // api.user.getMyUser.useQuery()
-        },
+        queryFn: async () => fetchGetMyUser,
     })
 
     const { mutate: createPrismaUser } = useMutation({
-        mutationFn: async () => {
-            alert("Not yet imlpemented")
-            // api.user.create.useMutation
-        },
+        mutationFn: fetchCreateUser,
         onSuccess: () => {
-            // void ctx.user.getMyUser.invalidate()
-            // queryClient.invalidateQueries({ queryKey: [] })
+            queryClient.invalidateQueries({ queryKey: ["prismaUser"] })
         },
         onError: (err: any) => {
             console.log({ err })

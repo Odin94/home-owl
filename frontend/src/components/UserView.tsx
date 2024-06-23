@@ -1,6 +1,5 @@
 import { Title } from "@mantine/core"
-
-type User = any
+import { User } from "~/utils/types"
 
 const UserView = ({
     user,
