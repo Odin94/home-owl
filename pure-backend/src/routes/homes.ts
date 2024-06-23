@@ -40,7 +40,7 @@ export const ExtendedHomeSchema = HomeModel.extend({
 export type ExtendedHome = z.infer<typeof ExtendedHomeSchema>
 
 export const ExtendedHomeWithClerkSchema = ExtendedHomeSchema.extend({
-    clerkUsers: z.array(ClerkUserSchema).nullable(),
+    clerkUsers: ClerkUserSchema.array().nullable(),
 }).nullable()
 
 export type ExtendedHomeWithClerk = z.infer<typeof ExtendedHomeWithClerkSchema>
@@ -71,7 +71,7 @@ export const registerHomes = (
     // create home
     server.withTypeProvider<ZodTypeProvider>().route({
         method: "POST",
-        url: "/homes/create",
+        url: "/homes",
         schema: {
             response: {
                 200: z.union([HomeModel, z.null()]),
@@ -175,7 +175,7 @@ export const registerHomes = (
     // getMyHome
     server.withTypeProvider<ZodTypeProvider>().route({
         method: "GET",
-        url: "/homes/getMyHome",
+        url: "/homes/me",
         schema: {
             response: {
                 200: HomeModel.extend({
@@ -238,7 +238,7 @@ export const registerHomes = (
         url: "/homes/getUsersWithChoreCompletionsInMyHome",
         schema: {
             response: {
-                200: z.array(UserModel),
+                200: UserModel.array(),
                 400: z.string(),
                 403: z.string().optional(),
                 404: z.null(),
