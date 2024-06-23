@@ -11,10 +11,9 @@ const LoginHeader = () => {
 
     const queryClient = useQueryClient()
 
-    const { data: prismaUser, isLoading: isPrismaUserLoading } = useQuery({
-        // TODO: Should prismaUser and other fetchGetMyuser be different?
+    const { data: prismaUser, isPending: isPrismaUserLoading } = useQuery({
         queryKey: ["prismaUser"],
-        queryFn: async () => fetchGetMyUser,
+        queryFn: fetchGetMyUser,
     })
 
     const { mutate: createPrismaUser } = useMutation({

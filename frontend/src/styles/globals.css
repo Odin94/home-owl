@@ -1,5 +1,6 @@
 /* Disabled as they overwrite mantine stuff */
 /* @tailwind base; */
+@tailwind base;
 @tailwind components;
 @tailwind utilities;
 

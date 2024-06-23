@@ -1,12 +1,11 @@
 import {
     Chore,
-    ChoreCompletion,
     ChoreCompletionInput,
-    ChoreGetPayload,
     ChoreModel,
     CreateChoreSubmitValues,
     HomeWithUsers,
     HomeWithUsersModel,
+    UpdateChoreSubmitValues,
     UserModel,
     UserWithChoreCompletions,
     UserWithChoreCompletionsModel,
@@ -31,13 +30,11 @@ const doFetch = async (
     const opts: RequestInit = body
         ? {
               method: method,
-              mode: "no-cors",
               credentials: "include",
               body: JSON.stringify(body),
           }
         : {
               method: method,
-              mode: "no-cors",
               credentials: "include",
           }
     const response = await fetch(`${basePath}${path}`, opts)
@@ -52,10 +49,14 @@ const doFetch = async (
 // Homes
 
 export const fetchGetMyHome = async (): Promise<HomeWithUsers> => {
-    const response = await doFetch("/homes/getMyHome", "GET")
+    const response = await doFetch("/homes/me", "GET")
     const myHome = HomeWithUsersModel.parse(response)
 
     return myHome
+}
+
+export const fetchCreateHome = async () => {
+    return doFetch("/homes", "POST")
 }
 
 export const fetchGetUsersWithChoreCompletionsInMyHome = async (): Promise<
@@ -75,58 +76,56 @@ export const fetchGetUsersWithChoreCompletionsInMyHome = async (): Promise<
 // Users
 
 export const fetchGetMyUser = async () => {
-    const response = await doFetch("/users/getMyUser", "GET")
+    const response = await doFetch("/users/me", "GET")
     const user = UserModel.parse(response)
 
     return user
 }
 
 export const fetchCreateUser = async () => {
-    return doFetch("/users/createUser", "POST")
+    return doFetch("/users", "POST")
 }
 
 // Chores
 
-export const fetchCreateChore = async (values: CreateChoreSubmitValues) => {
-    return doFetch("/chores/createChore", "POST", values)
-}
-
-export const fetchGetMyChores = async () => {
-    const response = await doFetch("/chores/getMyChores", "GET")
+export const fetchGetMyChores = async (): Promise<Chore[]> => {
+    const response = await doFetch("/chores/me", "GET")
     const chores = response.map((chore: unknown) => ChoreModel.parse(chore))
 
-    // TODO: fix type
-    return chores as Chore[]
+    return chores
 }
 
-export const fetchGetChore = async (id: string): Promise<Chore> => {
+export const fetchGetChore = async (id: string) => {
     const response = await doFetch(`/chores/${id}`, "GET")
     const chore = ChoreModel.parse(response)
 
-    // TODO: fix type
-    return chore as Chore
+    return chore
 }
 
-export const fetchUpdateChore = async (updatedChore: ChoreGetPayload) => {
-    return doFetch("/chores/updateChore", "POST", updatedChore)
+export const fetchCreateChore = async (values: CreateChoreSubmitValues) => {
+    return doFetch("/chores", "POST", values)
+}
+
+export const fetchUpdateChore = async (
+    updatedChore: UpdateChoreSubmitValues,
+) => {
+    return doFetch("/chores/update", "POST", updatedChore)
 }
 
 export const fetchDeleteChore = async ({ id }: { id: string }) => {
-    return doFetch("/chores/deleteChore", "POST", { id })
+    return doFetch("/chores/delete", "POST", { id })
 }
 
 // Chore Completions
 
 export const fetchDeleteChoreCompletion = async ({ id }: { id: string }) => {
-    return doFetch("/choreCompletions/deleteChoreCompletion", "POST", { id })
+    return doFetch("/chore-completions/delete", "POST", {
+        choreCompletionId: id,
+    })
 }
 
 export const fetchCreateChoreCompletion = async (
     choreCompletion: ChoreCompletionInput,
 ) => {
-    return doFetch(
-        "/choreCompletions/createChoreCompletion",
-        "POST",
-        choreCompletion,
-    )
+    return doFetch("/chore-completions", "POST", choreCompletion)
 }

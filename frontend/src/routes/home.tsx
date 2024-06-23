@@ -1,6 +1,6 @@
 import { useUser } from "@clerk/clerk-react"
 import { Button, Center, Stack, Text } from "@mantine/core"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { Helmet } from "react-helmet"
@@ -12,8 +12,9 @@ import {
 } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
 import { PageLayout } from "~/components/layout"
-import { fetchGetMyHome } from "~/utils/queries"
+import { fetchCreateHome, fetchGetMyHome } from "~/utils/queries"
 import { HomeWithUsers } from "~/utils/types"
+import "~/styles/globals.css"
 
 export const Route = createFileRoute("/home")({
     component: HomeView,
@@ -34,15 +35,13 @@ const ExistingHomeView = ({ home }: { home: HomeWithUsers }) => {
 }
 
 const CreateHomeWizard = () => {
-    alert("WIZARD")
+    const queryClient = useQueryClient()
+
     const { mutate, isPending: isPosting } = useMutation({
-        mutationFn: async () => {
-            alert("Not yet implemented")
-            // api.home.create
-        },
+        mutationFn: fetchCreateHome,
         onSuccess: () => {
             toast.success("Home created!")
-            // void ctx.home.getMyHome.invalidate()
+            queryClient.invalidateQueries({ queryKey: ["myHome"] })
         },
         onError: (err: any) => {
             const errorMessage = err.data?.zodError?.fieldErrors?.content
@@ -164,7 +163,7 @@ function HomeView() {
                 <LoadingPage />
             </PageLayout>
         )
-    if (error)
+    if (error && !error.message.includes("NOT FOUND"))
         return (
             <PageLayout>
                 <LoginHeader />

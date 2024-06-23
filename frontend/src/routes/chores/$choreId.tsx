@@ -19,30 +19,30 @@ import {
     IconPlayerSkipForward,
     IconTrashX,
 } from "@tabler/icons-react"
+import { useMutation, useQuery } from "@tanstack/react-query"
+import {
+    Link,
+    createFileRoute,
+    useNavigate,
+    useParams,
+} from "@tanstack/react-router"
 import dayjs from "dayjs"
 import duration from "dayjs/plugin/duration"
+import { Helmet } from "react-helmet"
 import toast from "react-hot-toast"
+import CustomCompletionModal from "~/components/CustomCompletionModal"
 import LoginHeader from "~/components/Header"
 import { LoadingPage } from "~/components/LoadingSpinner"
 import { PageLayout } from "~/components/layout"
-import { getNextDeadline } from "~/utils/utils"
-import { CreateChoreFormValues, createChoreSchema } from "./createChore"
-import {
-    createFileRoute,
-    useNavigate,
-    Link,
-    useParams,
-} from "@tanstack/react-router"
-import { useCompleteChore } from "../../utils/hooks"
-import CustomCompletionModal from "~/components/CustomCompletionModal"
-import { Chore, ChoreGetPayload, CreateChoreSubmitValues } from "~/utils/types"
-import { Helmet } from "react-helmet"
-import { useMutation, useQuery } from "@tanstack/react-query"
 import {
     fetchDeleteChore,
     fetchGetChore,
     fetchUpdateChore,
 } from "~/utils/queries"
+import { Chore, CreateChoreSubmitValues } from "~/utils/types"
+import { getNextDeadline } from "~/utils/utils"
+import { useCompleteChore } from "../../utils/hooks"
+import { CreateChoreFormValues, createChoreSchema } from "./createChore"
 dayjs.extend(duration)
 
 export const Route = createFileRoute("/chores/$choreId")({
@@ -132,7 +132,7 @@ const getRepeatIntervalNumber = (
     }
 }
 
-const ChoreDetailsViewInner = ({ chore }: { chore: ChoreGetPayload }) => {
+const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
     const navigate = useNavigate()
 
     const [

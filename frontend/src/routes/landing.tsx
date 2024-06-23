@@ -3,6 +3,7 @@ import { Button, Container, Grid, Stack, Text, Title } from "@mantine/core"
 import { Helmet } from "react-helmet"
 import { Link, createFileRoute } from "@tanstack/react-router"
 import { LoadingPage } from "~/components/LoadingSpinner"
+import "~/styles/globals.css"
 
 export const Route = createFileRoute("/landing")({
     component: LandingPage,

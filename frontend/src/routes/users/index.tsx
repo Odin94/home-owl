@@ -165,7 +165,7 @@ const CompletedChoreView = ({
     const shortChoreName =
         choreName.length > 14 ? choreName.substring(0, 10) + "..." : choreName
 
-    const { mutate: deleteChore, isPending } = useMutation({
+    const { mutate: deleteChoreCompletion, isPending } = useMutation({
         mutationFn: fetchDeleteChoreCompletion,
         onSuccess: () => {
             toast(`Deleted completion of ${shortChoreName}!`)
@@ -189,7 +189,7 @@ const CompletedChoreView = ({
             },
             confirmProps: { color: "red" },
             onConfirm: async () =>
-                await deleteChore({
+                await deleteChoreCompletion({
                     id: choreCompletion.id,
                 }),
             centered: true,
