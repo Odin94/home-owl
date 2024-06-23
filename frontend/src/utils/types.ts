@@ -4,7 +4,7 @@ export const createChoreInput = z.object({
     name: z.string().min(1),
     description: z.string(),
     points: z.number().int().min(0),
-    deadline: z.date(),
+    deadline: z.coerce.date(),
     shouldRepeat: z.boolean(),
     repeatIntervalMinutes: z.number().int().min(0),
 })
@@ -17,8 +17,8 @@ export type UpdateChoreSubmitValues = z.infer<typeof updateChoreInput>
 
 export const ChoreCompletionModel = z.object({
     id: z.string(),
-    createdAt: z.date(),
-    completedAt: z.date(),
+    createdAt: z.coerce.date(),
+    completedAt: z.coerce.date(),
     choreId: z.string().nullish(),
     choreName: z.string().nullish(),
     points: z.number().int(),
@@ -34,13 +34,13 @@ export type ChoreCompletionInput = {
 
 export const ChoreModel = z.object({
     id: z.string(),
-    createdAt: z.date(),
+    createdAt: z.coerce.date(),
     name: z.string(),
     description: z.string(),
     points: z.number().int(),
     shouldRepeat: z.boolean(),
     repeatIntervalMinutes: z.number().int(),
-    deadline: z.date(),
+    deadline: z.coerce.date(),
     homeId: z.string(),
 })
 
@@ -50,7 +50,7 @@ export const UserModel = z.object({
     id: z.string(),
     name: z.string().nullish(),
     email: z.string().nullish(),
-    emailVerified: z.date().nullish(),
+    emailVerified: z.coerce.date().nullish(),
     imageUrl: z.string().nullish(),
     clerkUserId: z.string(),
     points: z.number().int(),
@@ -67,7 +67,7 @@ export type UserWithChoreCompletions = z.infer<
 
 export const HomeModel = z.object({
     id: z.string(),
-    createdAt: z.date(),
+    createdAt: z.string(),
 })
 export type Home = z.infer<typeof HomeModel>
 

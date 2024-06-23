@@ -4,7 +4,12 @@ import { PrismaClient } from "@prisma/client"
 import { Ratelimit } from "@upstash/ratelimit"
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { ChoreModel, HomeModel, UserModel } from "~prisma/generated/models"
+import {
+    ChoreCompletionModel,
+    ChoreModel,
+    HomeModel,
+    UserModel,
+} from "~prisma/generated/models"
 import { z } from "zod"
 import {
     BAD_REQUEST,
@@ -46,7 +51,7 @@ export const ExtendedHomeWithClerkSchema = ExtendedHomeSchema.extend({
 export type ExtendedHomeWithClerk = z.infer<typeof ExtendedHomeWithClerkSchema>
 
 const addClerkUserDataToHome = async (
-    home: ExtendedHome | null
+    home: ExtendedHome | null,
 ): Promise<ExtendedHomeWithClerk> => {
     if (!home) return null
 
@@ -66,7 +71,7 @@ const addClerkUserDataToHome = async (
 
 export const registerHomes = (
     server: FastifyInstance,
-    prisma: PrismaClient
+    prisma: PrismaClient,
 ) => {
     // create home
     server.withTypeProvider<ZodTypeProvider>().route({
@@ -98,7 +103,7 @@ export const registerHomes = (
                 return res
                     .code(CONFLICT)
                     .send(
-                        `Users may have only one home. Yours has the id ${user.homeId}.`
+                        `Users may have only one home. Yours has the id ${user.homeId}.`,
                     )
             }
 
@@ -107,7 +112,7 @@ export const registerHomes = (
                 return res
                     .code(TOO_MANY_REQUESTS)
                     .send(
-                        `Users may have only one home. Yours has the id ${user.homeId}.`
+                        `Users may have only one home. Yours has the id ${user.homeId}.`,
                     )
             }
 
@@ -238,8 +243,10 @@ export const registerHomes = (
         url: "/homes/getUsersWithChoreCompletionsInMyHome",
         schema: {
             response: {
-                200: UserModel.array(),
-                400: z.string(),
+                200: UserModel.extend({
+                    choreCompletions: ChoreCompletionModel.array(),
+                }).array(),
+                400: z.any(),
                 403: z.string().optional(),
                 404: z.null(),
             },

@@ -8,7 +8,7 @@ import {
     ZodTypeProvider,
 } from "fastify-type-provider-zod"
 import cors from "@fastify/cors"
-import { z } from "zod"
+import { ZodError, z } from "zod"
 import { clerkPlugin } from "@clerk/fastify"
 import { registerHomes } from "./routes/homes"
 import { PrismaClient } from "@prisma/client"
@@ -37,6 +37,20 @@ void server.register(cors, {
 
 server.setValidatorCompiler(validatorCompiler)
 server.setSerializerCompiler(serializerCompiler)
+
+// send zod errors as object rather than strings
+server.setErrorHandler((error, request, reply) => {
+    if (error instanceof ZodError) {
+        reply.status(400).send({
+            statusCode: 400,
+            error: "Bad Request",
+            issues: error.issues,
+        })
+        return
+    }
+
+    reply.send(error)
+})
 
 server.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",

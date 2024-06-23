@@ -32,6 +32,9 @@ const doFetch = async (
               method: method,
               credentials: "include",
               body: JSON.stringify(body),
+              headers: {
+                  "Content-Type": "application/json",
+              },
           }
         : {
               method: method,

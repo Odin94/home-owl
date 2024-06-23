@@ -2,7 +2,7 @@ import { SignInButton, SignOutButton, useUser } from "@clerk/clerk-react"
 import { Button, Group, Stack, Tabs } from "@mantine/core"
 import { IconHome, IconSettings, IconUsers } from "@tabler/icons-react"
 import { useEffect, useState } from "react"
-import { Link } from "@tanstack/react-router"
+import { useNavigate } from "@tanstack/react-router"
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { fetchCreateUser, fetchGetMyUser } from "~/utils/queries"
 
@@ -10,6 +10,7 @@ const LoginHeader = () => {
     const { isLoaded: isClerkUserLoaded, isSignedIn } = useUser()
 
     const queryClient = useQueryClient()
+    const navigate = useNavigate()
 
     const { data: prismaUser, isPending: isPrismaUserLoading } = useQuery({
         queryKey: ["prismaUser"],
@@ -65,22 +66,25 @@ const LoginHeader = () => {
                             fz={"lg"}
                             value="/home"
                             leftSection={<IconHome size="1.0rem" />}
+                            onClick={() => navigate({ to: "/home" })}
                         >
-                            <Link to="/home">Home</Link>
+                            Home
                         </Tabs.Tab>
                         <Tabs.Tab
                             fz={"lg"}
                             value="/chores"
                             leftSection={<IconSettings size="1.0rem" />}
+                            onClick={() => navigate({ to: "/chores" })}
                         >
-                            <Link to="/chores">Chores</Link>
+                            Chores
                         </Tabs.Tab>
                         <Tabs.Tab
                             fz={"lg"}
                             value="/users"
                             leftSection={<IconUsers size="1.0rem" />}
+                            onClick={() => navigate({ to: "/users" })}
                         >
-                            <Link to="/users">Users</Link>
+                            Users
                         </Tabs.Tab>
                     </Tabs.List>
                 </Tabs>

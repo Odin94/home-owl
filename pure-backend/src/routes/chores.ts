@@ -4,7 +4,7 @@ import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
-import { z } from "zod"
+import { ZodIssueCode, z } from "zod"
 import { ChoreModel } from "~prisma/generated/models"
 import {
     BAD_REQUEST,
@@ -27,7 +27,7 @@ export const createChoreInput = z.object({
     name: z.string().min(1),
     description: z.string(),
     points: z.number().int().min(0),
-    deadline: z.date(),
+    deadline: z.coerce.date(),
     shouldRepeat: z.boolean(),
     repeatIntervalMinutes: z.number().int().min(0),
 })
@@ -43,7 +43,7 @@ export const registerChores = (
         schema: {
             response: {
                 200: ChoreModel.array(),
-                400: z.string(),
+                400: z.any(),
                 403: z.null(),
                 401: z.string(),
                 404: z.string(),
@@ -73,12 +73,12 @@ export const registerChores = (
     // get chore by id
     server.withTypeProvider<ZodTypeProvider>().route({
         method: "GET",
-        url: "/chores/$choreId",
+        url: "/chores/:choreId",
         schema: {
             params: z.object({ choreId: z.string() }),
             response: {
                 200: ChoreModel,
-                400: z.string(),
+                400: z.any(),
                 401: z.string(),
                 403: z.null(),
                 404: z.null(),
@@ -124,7 +124,7 @@ export const registerChores = (
             body: createChoreInput,
             response: {
                 200: ChoreModel,
-                400: z.string(),
+                400: z.any(),
                 401: z.string(),
                 403: z.null(),
                 409: z.string(),
@@ -142,13 +142,24 @@ export const registerChores = (
                 return res.code(TOO_MANY_REQUESTS).send()
             }
 
+            // console.log("---------------------")
+            // console.log(JSON.stringify(req.body)) // "{\"name\":\"asd\",\"description\":\"asd\",\"points\":1,\"deadline\":\"2024-06-23T20:42:23.609Z\",\"shouldRepeat\":true,\"repeatIntervalMinutes\":1440}"
+            // console.log(typeof req.body) // string
+            // console.log("---------------------")
+
+            // const choreData = createChoreInput.parse(
+            //     JSON.parse(req.body as string),
+            // )
+            // console.log(JSON.stringify(choreData))
+            // console.log("---------------------")
+
             try {
                 const me = await getUserWithHomeOrThrow(userId, prisma)
                 const myHomeId = me.homeId
 
                 const chore = await prisma.chore.create({
                     data: {
-                        ...req.body,
+                        ...req.body, //choreData,
                         home: { connect: { id: myHomeId } },
                     },
                 })
@@ -174,7 +185,7 @@ export const registerChores = (
             body: createChoreInput.extend({ id: z.string().min(1) }),
             response: {
                 200: ChoreModel,
-                400: z.string(),
+                400: z.any(),
                 401: z.string(),
                 403: z.null(),
                 404: z.null(),
@@ -226,7 +237,7 @@ export const registerChores = (
             body: z.object({ id: z.string().min(1) }),
             response: {
                 200: z.null(),
-                400: z.string(),
+                400: z.any(),
                 401: z.string(),
                 403: z.null(),
                 404: z.null(),

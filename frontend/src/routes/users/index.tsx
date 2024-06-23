@@ -33,10 +33,10 @@ import { ChoreCompletion, UserWithChoreCompletions } from "~/utils/types"
 dayjs.extend(relativeTime)
 
 export const Route = createFileRoute("/users/")({
-    component: UserView,
+    component: UsersView,
 })
 
-const UsersView = () => {
+function UsersView() {
     const navigate = useNavigate()
 
     const {
@@ -83,13 +83,13 @@ const UsersView = () => {
                     .sort((a, b) => b.points - a.points)
                     .map((user) => {
                         return (
-                            <>
+                            <div key={user.id}>
                                 <UserView user={user}>
                                     <Title>{`${user.points} pts`}</Title>
                                 </UserView>
 
                                 <CompletedChoresView user={user} />
-                            </>
+                            </div>
                         )
                     })}
             </PageLayout>

@@ -2,23 +2,22 @@ import { getAuth } from "@clerk/fastify"
 import { PrismaClient } from "@prisma/client"
 import { Ratelimit } from "@upstash/ratelimit"
 import { Redis } from "@upstash/redis"
+import dayjs from "dayjs"
+import duration from "dayjs/plugin/duration"
+import relativeTime from "dayjs/plugin/relativeTime"
 import { FastifyInstance } from "fastify"
 import { ZodTypeProvider } from "fastify-type-provider-zod"
 import { z } from "zod"
-import { ChoreCompletionModel, ChoreModel } from "~prisma/generated/models"
+import { getNextDeadline } from "~/utils"
+import { ChoreCompletionModel } from "~prisma/generated/models"
 import {
     BAD_REQUEST,
     FORBIDDEN,
     NOT_FOUND,
     TOO_MANY_REQUESTS,
     UNAUTHORIZED,
-    getChoresForUserOrThrow,
     getUserWithHomeOrThrow,
 } from "./shared"
-import dayjs from "dayjs"
-import duration from "dayjs/plugin/duration"
-import relativeTime from "dayjs/plugin/relativeTime"
-import { getNextDeadline } from "~/utils"
 
 dayjs.extend(duration)
 dayjs.extend(relativeTime)
@@ -45,7 +44,7 @@ export const registerChoreCompletions = (
             }),
             response: {
                 200: ChoreCompletionModel,
-                400: z.string(),
+                400: z.any(),
                 401: z.string(),
                 403: z.string(),
                 429: z.null(),
@@ -135,7 +134,7 @@ export const registerChoreCompletions = (
             body: z.object({ choreCompletionId: z.string() }),
             response: {
                 200: ChoreCompletionModel,
-                400: z.string(),
+                400: z.any(),
                 401: z.string(),
                 403: z.string(),
                 404: z.string(),

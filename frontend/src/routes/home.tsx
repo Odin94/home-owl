@@ -24,7 +24,7 @@ const ExistingHomeView = ({ home }: { home: HomeWithUsers }) => {
     return (
         <div>
             {home.users.map((user) => (
-                <UserView user={user} />
+                <UserView key={user.id} user={user} />
             ))}
 
             <div className="flex p-4">

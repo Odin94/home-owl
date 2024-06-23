@@ -39,7 +39,7 @@ export const createChoreSchema = z.object({
     name: z.string().min(1),
     description: z.string(),
     points: z.number().int().min(0),
-    deadline: z.date(),
+    deadline: z.coerce.date(),
     shouldRepeat: z.boolean(),
     repeatIntervalNumber: z.number().int().min(0),
     repeatIntervalUnit: z.union([
