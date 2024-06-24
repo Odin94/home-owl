@@ -76,6 +76,10 @@ export const fetchGetUsersWithChoreCompletionsInMyHome = async (): Promise<
     return usersWithChoreCompletionsInsMyHome
 }
 
+export const fetchAddUserToHome = async (username: string) => {
+    return doFetch("/homes/addUserToMyHome", "POST", { username })
+}
+
 // Users
 
 export const fetchGetMyUser = async () => {
@@ -115,13 +119,13 @@ export const fetchUpdateChore = async (
     return doFetch("/chores/update", "POST", updatedChore)
 }
 
-export const fetchDeleteChore = async ({ id }: { id: string }) => {
+export const fetchDeleteChore = async (id: string) => {
     return doFetch("/chores/delete", "POST", { id })
 }
 
 // Chore Completions
 
-export const fetchDeleteChoreCompletion = async ({ id }: { id: string }) => {
+export const fetchDeleteChoreCompletion = async (id: string) => {
     return doFetch("/chore-completions/delete", "POST", {
         choreCompletionId: id,
     })

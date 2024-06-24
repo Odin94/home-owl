@@ -1,6 +1,11 @@
 import { useUser } from "@clerk/clerk-react"
 import { Button, Center, Stack, Text } from "@mantine/core"
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
+import {
+    QueryClient,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { Helmet } from "react-helmet"
@@ -12,7 +17,11 @@ import {
 } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
 import { PageLayout } from "~/components/layout"
-import { fetchCreateHome, fetchGetMyHome } from "~/utils/queries"
+import {
+    fetchAddUserToHome,
+    fetchCreateHome,
+    fetchGetMyHome,
+} from "~/utils/queries"
 import { HomeWithUsers } from "~/utils/types"
 import "~/styles/globals.css"
 
@@ -79,16 +88,15 @@ const CreateHomeWizard = () => {
 
 const AddUserToHomeWizard = () => {
     const { user } = useUser()
+    const queryClient = new QueryClient()
 
     const [input, setInput] = useState("")
 
-    const { mutate: addUser, isPending: isPosting } = useMutation({
-        mutationFn: async ({ userName }: { userName: string }) => {
-            // api.home.addUserToMyHome
-        },
+    const { mutate: addUserToMyHome, isPending: isPosting } = useMutation({
+        mutationFn: fetchAddUserToHome,
         onSuccess: () => {
             setInput("")
-            // void ctx.home.getMyHome.invalidate()
+            queryClient.invalidateQueries({ queryKey: ["myHome"] })
             // void ctx.home.getMyHomeWithClerk.invalidate()
             toast("User added successfully!")
         },
@@ -118,7 +126,7 @@ const AddUserToHomeWizard = () => {
                     if (e.key === "Enter") {
                         e.preventDefault()
                         if (input !== "") {
-                            void addUser({ userName: input })
+                            void addUserToMyHome(input)
                         }
                     }
                 }}
@@ -127,7 +135,7 @@ const AddUserToHomeWizard = () => {
             {!isPosting ? (
                 <div style={{ width: "30%" }}>
                     <Button
-                        onClick={() => addUser({ userName: input })}
+                        onClick={() => addUserToMyHome(input)}
                         disabled={isPosting || input === ""}
                         className=""
                     >

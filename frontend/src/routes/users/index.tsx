@@ -189,9 +189,7 @@ const CompletedChoreView = ({
             },
             confirmProps: { color: "red" },
             onConfirm: async () =>
-                await deleteChoreCompletion({
-                    id: choreCompletion.id,
-                }),
+                await deleteChoreCompletion(choreCompletion.id),
             centered: true,
         })
 

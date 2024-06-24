@@ -19,7 +19,7 @@ import {
     IconPlayerSkipForward,
     IconTrashX,
 } from "@tabler/icons-react"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { QueryClient, useMutation, useQuery } from "@tanstack/react-query"
 import {
     Link,
     createFileRoute,
@@ -64,7 +64,7 @@ function ChoreDetailsView() {
         error,
     } = useQuery({
         queryFn: async () => fetchGetChore(choreId),
-        queryKey: [choreId],
+        queryKey: ["chores", choreId],
     })
 
     if (error?.message?.includes("UNAUTHORIZED")) {
@@ -134,6 +134,7 @@ const getRepeatIntervalNumber = (
 
 const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
     const navigate = useNavigate()
+    const queryClient = new QueryClient()
 
     const [
         customCompletionModalOpened,
@@ -146,9 +147,10 @@ const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
 
     const { mutate: updateChore, isPending: isUpdateLoading } = useMutation({
         mutationFn: fetchUpdateChore,
-        onSuccess: () => {
+        onSuccess: (_data, { id }) => {
             toast(`Chore '${form.values.name}' updated!`)
-            // void ctx.chores.getById.invalidate()
+            queryClient.invalidateQueries({ queryKey: ["chores", id] })
+
             setTimeout(() => navigate({ to: "/chores" }), 1000)
         },
         onError: (err: any) => {
@@ -159,9 +161,9 @@ const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
 
     const { mutate: deleteChore, isPending: isDeleteLoading } = useMutation({
         mutationFn: fetchDeleteChore,
-        onSuccess: () => {
+        onSuccess: (_data, id) => {
             toast(`Chore '${form.values.name}' deleted!`)
-            // void ctx.chores.getById.invalidate()
+            queryClient.invalidateQueries({ queryKey: ["chores", id] })
             navigate({ to: "/chores" })
         },
         onError: (err: any) => {
@@ -216,7 +218,7 @@ const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
                 cancel: "Cancel",
             },
             confirmProps: { color: "red" },
-            onConfirm: async () => await deleteChore({ id: chore.id }),
+            onConfirm: async () => await deleteChore(chore.id),
             centered: true,
         })
 

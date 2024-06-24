@@ -206,7 +206,10 @@ function ChoresView() {
                             <Text mt={"xl"}>Upcoming chores</Text>
                         ) : null}
                         {futureChores.map((chore) => (
-                            <CompletableChoreView chore={chore} />
+                            <CompletableChoreView
+                                key={chore.id}
+                                chore={chore}
+                            />
                         ))}
                     </div>
                 ) : (
