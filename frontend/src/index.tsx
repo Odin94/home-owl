@@ -1,5 +1,5 @@
 import { ClerkProvider } from "@clerk/clerk-react"
-import { MantineProvider } from "@mantine/core"
+import { MantineProvider, createTheme } from "@mantine/core"
 import { ModalsProvider } from "@mantine/modals"
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
@@ -46,7 +46,7 @@ if (!rootElement.innerHTML) {
     const root = ReactDOM.createRoot(rootElement)
     root.render(
         <StrictMode>
-            <MantineProvider>
+            <MantineProvider defaultColorScheme="light" theme={createTheme({})}>
                 <ModalsProvider>
                     <QueryClientProvider client={queryClient}>
                         <App />

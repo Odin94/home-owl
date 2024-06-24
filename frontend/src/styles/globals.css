@@ -16,7 +16,7 @@ See: https://github.com/tailwindlabs/tailwindcss/issues/6979#issuecomment-100856
   }
 
 body {
-    @apply bg-black text-slate-100;
+    /* @apply bg-black text-slate-100; */
     overscroll-behavior: none;
 }
 
