@@ -12,7 +12,7 @@ import {
 } from "@mantine/core"
 import { useDisclosure } from "@mantine/hooks"
 import { modals } from "@mantine/modals"
-import { useMutation, useQuery } from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
@@ -157,6 +157,8 @@ const CompletedChoreView = ({
 }: {
     choreCompletion: ChoreCompletion
 }) => {
+    const queryClient = useQueryClient()
+
     const { data: me } = useQuery({
         queryFn: fetchGetMyUser,
         queryKey: ["me"],
@@ -170,7 +172,7 @@ const CompletedChoreView = ({
         onSuccess: () => {
             toast(`Deleted completion of ${shortChoreName}!`)
             // TODOdin: This may lead to re-loading a lot of data - maybe load less data and only invalidate what you need to invalidate?
-            // ctx.home.getUsersWithChoreCompletionsInMyHome.invalidate()
+            queryClient.invalidateQueries({ queryKey: ["usersInMyHome"] })
         },
         onError: (err) => {
             console.log(err)

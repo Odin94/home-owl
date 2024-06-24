@@ -19,7 +19,12 @@ import {
     IconPlayerSkipForward,
     IconTrashX,
 } from "@tabler/icons-react"
-import { QueryClient, useMutation, useQuery } from "@tanstack/react-query"
+import {
+    QueryClient,
+    useMutation,
+    useQuery,
+    useQueryClient,
+} from "@tanstack/react-query"
 import {
     Link,
     createFileRoute,
@@ -134,7 +139,7 @@ const getRepeatIntervalNumber = (
 
 const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
     const navigate = useNavigate()
-    const queryClient = new QueryClient()
+    const queryClient = useQueryClient()
 
     const [
         customCompletionModalOpened,

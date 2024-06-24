@@ -88,7 +88,7 @@ const CreateHomeWizard = () => {
 
 const AddUserToHomeWizard = () => {
     const { user } = useUser()
-    const queryClient = new QueryClient()
+    const queryClient = useQueryClient()
 
     const [input, setInput] = useState("")
 

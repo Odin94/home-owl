@@ -1,4 +1,4 @@
-import { QueryClient, useMutation } from "@tanstack/react-query"
+import { useMutation, useQueryClient } from "@tanstack/react-query"
 import { useState } from "react"
 import toast from "react-hot-toast"
 import { Chore } from "~/utils/types"
@@ -6,7 +6,7 @@ import { fetchCreateChoreCompletion } from "./queries"
 
 export const useCompleteChore = (chore: Chore, onSettled?: () => void) => {
     const [isCompleted, setIsCompleted] = useState(false)
-    const queryClient = new QueryClient()
+    const queryClient = useQueryClient()
 
     const {
         mutate: completeChore,
