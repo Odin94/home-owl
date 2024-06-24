@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import { RouterProvider, createRouter } from "@tanstack/react-router"
 import { StrictMode } from "react"
 import ReactDOM from "react-dom/client"
+import { Toaster } from "react-hot-toast"
 // Import the generated route tree
 import { routeTree } from "~/routeTree.gen"
 import "~/styles/globals.css"
@@ -32,6 +33,8 @@ const App = () => {
             routerReplace={(to) => navigate({ to, replace: true })}
             publishableKey={PUBLISHABLE_KEY}
         >
+            <Toaster position="bottom-center" />
+
             <RouterProvider router={router} />
         </ClerkProvider>
     )
