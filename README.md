@@ -4,18 +4,23 @@ Home Owl is a household chore tracker. Create (recurring) chores, mark them as c
 
 Home Owl makes it fun and easy to keep track of who does how much work around the house. To create a fair workload distribution and a happy and relaxed vibe around chores.
 
+The project is split into a [frontend](./frontend/), a [backend](./backend/) and a database (see [docker-compose.yml](./docker-compose.yml))
 
-## How to run web app
-* Clerk auth & upstash redis -> fill `.env` file based on `.env.sample`
+## How to run
+* Clerk auth & upstash redis -> fill `.env` files based on `.env.sample` in `frontend` and `backend`
 * `docker compose up -d` to get local db running
-* `npm run dev` for running in dev mode
+* `npm i --legacy-peer-deps` and `npm start` in `backend` and `frontend`
 
+## How to deploy
+* Get a cloud database (eg. [neon](https://neon.tech)) and add it's connection url to `./backend/.env` under `DATABASE_URL`
+* Get a server and run the backend on it
+* Get a static site host (eg. [netlify](https://www.netlify.com)) and point it to `./frontend`. Remember to configure environment variables like in `./frontend/.env`
 
-## How to build Android app
+<!-- ## How to build Android app
 * `npm run static` to produce a static frontend build (must be static for capacitor)
 * `npx cap sync` to sync built web app to mobile apps
 * `npx cap open android` to open android studio, build and debug android app from there
-* Use chrome debugger (vivaldi://inspect/#devices) for debugging https://capacitorjs.com/docs/vscode/debugging
+* Use chrome debugger (vivaldi://inspect/#devices) for debugging https://capacitorjs.com/docs/vscode/debugging -->
 
 <!-- Notes to self
 * https://youtu.be/YkOSUVzOAA4
@@ -39,37 +44,6 @@ Stretch goals:
 * Build a mobile / desktop app?
   * Consider https://capacitorjs.com / https://github.com/emadgit/create-t3-mobile-app
  -->
-
-# Used tech
-
--   [T3 Stack](https://create.t3.gg/) / `create-t3-app` to initialize project
--   TODO: Replace Planetscale since their free-tier is gone [[Planetscale](https://planetscale.com) for database
-    -   Prisma ORM (`npx prisma studio`, `npx prisma db push`)
--   [Vercel](vercel.com) for deployment
--   [Clerk](https://clerk.com) for auth
-    -   Next-auth
--   [Capacitor](https://capacitorjs.com/) for generating mobile applications (atm only android)
-
-
-# Create T3 App
-
-This is a [T3 Stack](https://create.t3.gg/) project bootstrapped with `create-t3-app`.
-
-## What's next? How do I make an app with this?
-
-We try to keep this project as simple as possible, so you can start with just the scaffolding we set up for you, and add additional things later when they become necessary.
-
-If you are not familiar with the different technologies used in this project, please refer to the respective docs. If you still are in the wind, please join our [Discord](https://t3.gg/discord) and ask for help.
-
--   [Next.js](https://nextjs.org)
--   [NextAuth.js](https://next-auth.js.org)
--   [Prisma](https://prisma.io)
--   [Tailwind CSS](https://tailwindcss.com)
--   [tRPC](https://trpc.io)
-
-## How do I deploy this?
-
-Follow our deployment guides for [Vercel](https://create.t3.gg/en/deployment/vercel), [Netlify](https://create.t3.gg/en/deployment/netlify) and [Docker](https://create.t3.gg/en/deployment/docker) for more information.
 
 
 ## Credits
