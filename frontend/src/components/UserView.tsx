@@ -1,4 +1,4 @@
-import { Divider, Title } from "@mantine/core"
+import { Title } from "@mantine/core"
 import { User } from "~/utils/types"
 
 const UserView = ({

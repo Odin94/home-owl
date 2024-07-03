@@ -9,7 +9,7 @@ export const Route = createFileRoute("/landing")({
     component: LandingPage,
 })
 
-function LandingPage() {
+export function LandingPage() {
     const { isLoaded: userLoaded, isSignedIn } = useUser()
 
     if (!userLoaded) return <LoadingPage />

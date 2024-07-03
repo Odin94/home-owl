@@ -19,12 +19,7 @@ import {
     IconPlayerSkipForward,
     IconTrashX,
 } from "@tabler/icons-react"
-import {
-    QueryClient,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
     Link,
     createFileRoute,

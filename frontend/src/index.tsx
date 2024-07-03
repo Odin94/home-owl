@@ -9,9 +9,14 @@ import { Toaster } from "react-hot-toast"
 // Import the generated route tree
 import { routeTree } from "~/routeTree.gen"
 import "~/styles/globals.css"
+import { LandingPage } from "./routes/landing"
+import { getConfigs } from "./utils/config"
 
 // Create a new router instance
-const router = createRouter({ routeTree })
+const router = createRouter({
+    routeTree,
+    defaultNotFoundComponent: LandingPage,
+})
 
 // Register the router instance for type safety
 declare module "@tanstack/react-router" {
@@ -20,9 +25,9 @@ declare module "@tanstack/react-router" {
     }
 }
 
+const config = getConfigs()
+
 const queryClient = new QueryClient()
-// TODO: Add cool configs like in parent that are validated on startup
-const PUBLISHABLE_KEY = process.env.REACT_APP_CLERK_PUBLISHABLE_KEY!
 
 const App = () => {
     const navigate = router.navigate
@@ -31,7 +36,7 @@ const App = () => {
         <ClerkProvider
             routerPush={(to) => navigate({ to })}
             routerReplace={(to) => navigate({ to, replace: true })}
-            publishableKey={PUBLISHABLE_KEY}
+            publishableKey={config.REACT_APP_CLERK_PUBLISHABLE_KEY}
         >
             <Toaster position="bottom-center" />
 

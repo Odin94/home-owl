@@ -1,11 +1,6 @@
 import { useUser } from "@clerk/clerk-react"
 import { Button, Center, Stack, Text } from "@mantine/core"
-import {
-    QueryClient,
-    useMutation,
-    useQuery,
-    useQueryClient,
-} from "@tanstack/react-query"
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { createFileRoute, useNavigate } from "@tanstack/react-router"
 import { useState } from "react"
 import { Helmet } from "react-helmet"
@@ -17,13 +12,13 @@ import {
 } from "~/components/LoadingSpinner"
 import UserView from "~/components/UserView"
 import { PageLayout } from "~/components/layout"
+import "~/styles/globals.css"
 import {
     fetchAddUserToHome,
     fetchCreateHome,
     fetchGetMyHome,
 } from "~/utils/queries"
 import { HomeWithUsers } from "~/utils/types"
-import "~/styles/globals.css"
 
 export const Route = createFileRoute("/home")({
     component: HomeView,

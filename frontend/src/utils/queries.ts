@@ -10,17 +10,9 @@ import {
     UserWithChoreCompletions,
     UserWithChoreCompletionsModel,
 } from "~/utils/types"
+import { getConfigs } from "./config"
 
-// TODO: Get from env like below
-const basePath = "http://localhost:8080"
-
-// export const getBaseUrl = () => {
-//     // TODO: Use env var or something instead of hardcoded https://home-owl.odin-matthias.de
-//     // if (Capacitor.isNativePlatform()) return `https://home-owl.odin-matthias.de`
-//     if (typeof window !== "undefined") return "" // browser should use relative url
-//     if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}` // SSR should use vercel url
-//     return `http://localhost:${process.env.PORT ?? 3000}` // dev SSR should use localhost
-// }
+const basePath = getConfigs().REACT_APP_BASE_URL
 
 const doFetch = async (
     path: string,
