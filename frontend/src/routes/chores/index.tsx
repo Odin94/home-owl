@@ -21,7 +21,7 @@ import { useCompleteChore } from "../../utils/hooks"
 import { Helmet } from "react-helmet"
 import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import { Chore } from "~/utils/types"
-import { useQuery } from "@tanstack/react-query"
+import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { fetchGetMyChores } from "~/utils/queries"
 
 dayjs.extend(localeData)
@@ -46,6 +46,7 @@ export const Route = createFileRoute("/chores/")({
 
 function CompletableChoreView({ chore }: { chore: Chore }) {
     const navigate = useNavigate()
+    const queryClient = useQueryClient()
 
     const now = dayjs()
     const deadline = dayjs(chore.deadline)
@@ -79,7 +80,9 @@ function CompletableChoreView({ chore }: { chore: Chore }) {
                     variants={completableChoreVariants}
                     onAnimationComplete={() => {
                         setIsCompleted(false)
-                        // void ctx.chores.getMyChores.invalidate()
+                        queryClient.invalidateQueries({
+                            queryKey: ["chores"],
+                        })
                     }}
                 >
                     <Group gap="40px" className="flex">
@@ -200,7 +203,10 @@ function ChoresView() {
                             <Text mt={"xl"}>Open chores</Text>
                         ) : null}
                         {openChores.map((chore) => (
-                            <CompletableChoreView chore={chore} />
+                            <CompletableChoreView
+                                key={chore.id}
+                                chore={chore}
+                            />
                         ))}
                         {futureChores.length > 0 ? (
                             <Text mt={"xl"}>Upcoming chores</Text>

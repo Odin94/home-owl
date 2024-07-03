@@ -135,9 +135,9 @@ export const registerHomes = (
         method: "POST",
         url: "/homes/addUserToMyHome",
         schema: {
-            body: z.object({ userName: z.string().min(1) }),
+            body: z.object({ username: z.string().min(1) }),
             response: {
-                200: z.null(),
+                200: z.object({ id: z.string() }),
                 422: z.string(),
             },
         },
@@ -159,11 +159,16 @@ export const registerHomes = (
             }
 
             const userToAdd = await prisma.user.findFirst({
-                where: { name: req.body.userName },
+                where: { name: req.body.username },
             })
 
             if (!userToAdd) {
                 return res.code(NOT_FOUND).send("User to add not found.")
+            }
+            if (userToAdd.clerkUserId === userId) {
+                return res
+                    .code(UNPROCESSABLE_CONTENT)
+                    .send("You're already part of your own home.")
             }
 
             await prisma.home.update({
@@ -173,7 +178,7 @@ export const registerHomes = (
                 },
             })
 
-            res.code(200).send()
+            res.code(200).send({ id: userToAdd.id })
         },
     })
 

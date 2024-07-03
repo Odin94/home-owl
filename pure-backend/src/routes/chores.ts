@@ -236,7 +236,7 @@ export const registerChores = (
         schema: {
             body: z.object({ id: z.string().min(1) }),
             response: {
-                200: z.null(),
+                200: z.object({ id: z.string() }),
                 400: z.any(),
                 401: z.string(),
                 403: z.null(),
@@ -262,7 +262,7 @@ export const registerChores = (
                 await prisma.chore.delete({
                     where: { homeId: myHomeId, id: req.body.id },
                 })
-                return res.send()
+                return res.send({ id: req.body.id })
             } catch (e) {
                 if (e instanceof Error) {
                     if (e.message.includes(`${UNAUTHORIZED}`))

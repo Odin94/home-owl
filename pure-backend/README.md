@@ -16,9 +16,19 @@ The backend uses Prisma to manage the database. The following commands let you g
 
 * `npx prisma generate`
 * `npx prisma db push` to sync database
+* `npx prisma studio` to run prisma studio for exploring the database
 
 ### Running the backend service
 * Run database in docker from Home Owl root with `docker compose up -d`
 * `npm start` to run
 
 
+## Debugging
+* Make sure to add a cors-supported origin to your debugging requests, eg. `curl localhost:8080 -H "Origin: http://localhost"`
+  
+
+## Notes
+* If you ever want to compile to js and run that, consider the following steps:
+    * Add `"outDir": "dist",` to tsconfig.json
+    * Add `"build": "tsc -noEmit false -p tsconfig.json --pretty",` to package.json scripts
+    * Make sure all module imports in typescript use ".js" ending (node requires it for imports) - or hope that this mess is fixed at time of reading

@@ -22,15 +22,16 @@ const server: FastifyInstance = Fastify({ logger: true })
 server.register(clerkPlugin)
 void server.register(cors, {
     origin: (origin, cb) => {
-        if (!origin) return
-        const hostname = new URL(origin).hostname
-        if (hostname === "localhost" || hostname === "*.odin-matthias.de") {
-            //  Request from localhost will pass
-            cb(null, true)
-            return
+        if (origin) {
+            const hostname = new URL(origin).hostname
+            if (hostname === "localhost" || hostname === "*.odin-matthias.de") {
+                //  Request from localhost will pass
+                cb(null, true)
+                return
+            }
         }
         // Generate an error on other origins, disabling access
-        cb(new Error("Not allowed"), false)
+        cb(new Error("cors not allowed"), false)
     },
     credentials: true,
 })
@@ -41,12 +42,16 @@ server.setSerializerCompiler(serializerCompiler)
 // send zod errors as object rather than strings
 server.setErrorHandler((error, request, reply) => {
     if (error instanceof ZodError) {
-        reply.status(400).send({
+        return reply.status(400).send({
             statusCode: 400,
             error: "Bad Request",
             issues: error.issues,
         })
-        return
+    }
+    if (error.message === "cors not allowed") {
+        return reply.status(403).send({
+            error: "cors not allowed",
+        })
     }
 
     reply.send(error)
@@ -56,16 +61,13 @@ server.withTypeProvider<ZodTypeProvider>().route({
     method: "GET",
     url: "/",
     schema: {
-        querystring: z.object({
-            name: z.string().min(4),
-        }),
-        // body: z.object...
         response: {
             200: z.string(),
         },
     },
-    handler: (req, res) => {
-        res.send(req.query.name)
+    handler: async (req, res) => {
+        req.log.info("WHAT")
+        res.send("Home Owl online 🦉")
     },
 })
 

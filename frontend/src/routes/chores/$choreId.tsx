@@ -61,7 +61,6 @@ function ChoreDetailsView() {
     // TODO: Fix next no longer hot-reloading; is it launching the static thingy with npm start now?
     // TODO: Fix typing for choreId, current handling is very inelegant
     if (typeof choreId !== "string") choreId = ""
-    console.log(choreId)
 
     const {
         data: chore,
