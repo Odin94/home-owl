@@ -12,7 +12,7 @@ import {
 } from "~/utils/types"
 import { getConfigs } from "./config"
 
-const basePath = getConfigs().REACT_APP_BASE_URL
+const basePath = getConfigs().VITE_BASE_URL
 
 const doFetch = async (
     path: string,

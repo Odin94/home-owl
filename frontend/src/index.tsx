@@ -36,7 +36,7 @@ const App = () => {
         <ClerkProvider
             routerPush={(to) => navigate({ to })}
             routerReplace={(to) => navigate({ to, replace: true })}
-            publishableKey={config.REACT_APP_CLERK_PUBLISHABLE_KEY}
+            publishableKey={config.VITE_CLERK_PUBLISHABLE_KEY}
         >
             <Toaster position="bottom-center" />
 

@@ -2,13 +2,14 @@
   "name": "frontend",
   "version": "0.1.0",
   "private": true,
+  "main": "./src/index.tsx",
   "dependencies": {
     "@clerk/clerk-react": "^5.2.5",
     "@mantine/core": "^7.10.2",
     "@mantine/dates": "^7.10.2",
     "@mantine/form": "^7.10.2",
     "@mantine/hooks": "^7.10.2",
-    "@mantine/modals": "^7.10.2",
+    "@mantine/modals": "^7.11.1",
     "@tabler/icons-react": "^3.6.0",
     "@tanstack/react-query": "^5.45.1",
     "@tanstack/react-router": "^1.40.0",
@@ -33,13 +34,10 @@
     "web-vitals": "^2.1.4"
   },
   "scripts": {
-    "start": "npm run generate-routes && craco start",
-    "test": "craco test",
-    "eject": "craco eject",
-    "generate-routes": "tsr generate",
-    "watch-routes": "tsr watch",
-    "build": "npm run generate-routes && craco build",
-    "dev": "npm run watch-routes && craco start"
+    "old_start": "npm run generate-routes && craco start",
+    "start": "vite",
+    "build": "vite build",
+    "serve": "vite preview"
   },
   "eslintConfig": {
     "extends": [
@@ -64,14 +62,16 @@
     "@craco/craco": "^7.1.0",
     "@tanstack/eslint-plugin-query": "^5.43.1",
     "@tanstack/router-cli": "^1.37.0",
-    "@tanstack/router-devtools": "^1.40.0",
-    "@tanstack/router-plugin": "^1.39.13",
+    "@tanstack/router-devtools": "^1.43.12",
+    "@tanstack/router-plugin": "^1.43.12",
+    "@vitejs/plugin-react": "^4.3.1",
     "postcss": "^8.4.38",
     "postcss-loader": "^8.1.1",
     "postcss-preset-mantine": "^1.15.0",
     "postcss-simple-vars": "^7.0.1",
     "prettier": "3.3.2",
     "tailwindcss": "^3.4.4",
-    "tsconfig-paths": "^4.2.0"
+    "tsconfig-paths": "^4.2.0",
+    "vite": "^5.3.3"
   }
 }

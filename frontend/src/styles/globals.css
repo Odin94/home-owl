@@ -1,11 +1,12 @@
+
+@import "@mantine/core/styles.css";
+@import "@mantine/dates/styles.css";
 /* Disabled as they overwrite mantine stuff */
 /* @tailwind base; */
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-@import "@mantine/core/styles.css";
-@import "@mantine/dates/styles.css";
 
 /* Fix border-styles with disabled @tailwind base 
 See: https://github.com/tailwindlabs/tailwindcss/issues/6979#issuecomment-1008565109 */
@@ -22,5 +23,5 @@ body {
 
 @font-face {
   font-family: "Oleo Script";
-  src: local("Oleo Script"), url("../../public/OleoScript-Regular.ttf") format('truetype');
+  src: local("Oleo Script"), url("../../OleoScript-Regular.ttf") format('truetype');
 }
