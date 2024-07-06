@@ -4,7 +4,8 @@
   "main": "src/server.ts",
   "scripts": {
     "postinstall": "prisma generate",
-    "start": "tsx ./src/server.ts"
+    "start": "vite",
+    "start_tsx": "tsx ./src/server.ts"
   },
   "author": "",
   "license": "ISC",
@@ -29,6 +30,9 @@
     "prettier": "^3.3.2",
     "prisma": "^5.15.1",
     "tsx": "^4.15.7",
-    "typescript": "^5.5.2"
+    "typescript": "^5.5.2",
+    "vite": "^5.3.3",
+    "vite-plugin-node": "^3.1.0",
+    "vitest": "^1.6.0"
   }
 }

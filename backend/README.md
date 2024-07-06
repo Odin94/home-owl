@@ -20,7 +20,8 @@ The backend uses Prisma to manage the database. The following commands let you g
 
 ### Running the backend service
 * Run database in docker from Home Owl root with `docker compose up -d`
-* `npm start` to run
+* `npm start` to run the vite dev server (on port 8081) - comes with hot reloading (HMR)
+* `npm run start_tsx` to run the server without vite (on port 8080)
 
 
 ## Debugging
