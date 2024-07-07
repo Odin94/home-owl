@@ -141,7 +141,7 @@ const ChoreDetailsViewInner = ({ chore }: { chore: Chore }) => {
     ] = useDisclosure(false)
     const { completeChore, isLoading: isCompleteLoading } = useCompleteChore(
         chore,
-        closeCustomCompletionModal,
+        { onSettled: closeCustomCompletionModal, invalidateOnComplete: true },
     )
 
     const { mutate: updateChore, isPending: isUpdateLoading } = useMutation({

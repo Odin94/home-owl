@@ -4,7 +4,13 @@ import toast from "react-hot-toast"
 import { Chore } from "~/utils/types"
 import { fetchCreateChoreCompletion } from "./queries"
 
-export const useCompleteChore = (chore: Chore, onSettled?: () => void) => {
+export const useCompleteChore = (
+    chore: Chore,
+    opts?: {
+        onSettled?: () => void
+        invalidateOnComplete?: boolean
+    },
+) => {
     const [isCompleted, setIsCompleted] = useState(false)
     const queryClient = useQueryClient()
 
@@ -16,7 +22,11 @@ export const useCompleteChore = (chore: Chore, onSettled?: () => void) => {
         mutationFn: fetchCreateChoreCompletion,
         onSuccess: () => {
             toast(`Completed ${chore.name}!`)
-            queryClient.invalidateQueries({ queryKey: ["chores"] })
+            if (opts?.invalidateOnComplete) {
+                queryClient.invalidateQueries({
+                    queryKey: ["chores", chore.id],
+                })
+            }
 
             setIsCompleted(true)
         },
@@ -24,7 +34,7 @@ export const useCompleteChore = (chore: Chore, onSettled?: () => void) => {
             console.log(err)
             toast.error(`Failed to complete ${chore.name}. Please try again!`)
         },
-        onSettled: onSettled,
+        onSettled: opts?.onSettled,
     })
 
     return {

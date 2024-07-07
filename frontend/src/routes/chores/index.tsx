@@ -23,6 +23,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import { Chore } from "~/utils/types"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { fetchGetMyChores } from "~/utils/queries"
+import { useEffect, useState } from "react"
 
 dayjs.extend(localeData)
 dayjs.extend(weekday)
@@ -56,6 +57,14 @@ function CompletableChoreView({ chore }: { chore: Chore }) {
     const { completeChore, isLoading, isCompleted, setIsCompleted } =
         useCompleteChore(chore)
 
+    useEffect(() => {
+        // Fade out and back in animation:
+        // useCompleteChore internally sets isCompleted=true on POST success -> fade out
+        // animation complete invalidates ["chores"] -> outer component refetches
+        // -> changes chore -> isCompleted=false -> fade in
+        setIsCompleted(false)
+    }, [chore, setIsCompleted])
+
     return (
         <motion.div
             onClick={() => {
@@ -79,7 +88,6 @@ function CompletableChoreView({ chore }: { chore: Chore }) {
                     animate={isCompleted ? "completed" : "normal"}
                     variants={completableChoreVariants}
                     onAnimationComplete={() => {
-                        setIsCompleted(false)
                         queryClient.invalidateQueries({
                             queryKey: ["chores"],
                         })
@@ -190,17 +198,14 @@ function ChoresView() {
 
             <PageLayout>
                 <LoginHeader />
-                {/* <Center className="border-b border-slate-400 p-4">
-                    <Text fz={"32px"} fw={"700"}>
-                        Chores
-                    </Text>
-                </Center> */}
 
                 {chores.length > 0 ? (
                     // TODO: Add scrolling for large number of chores?
                     <div>
                         {openChores.length > 0 ? (
-                            <Text mt={"xl"}>Open chores</Text>
+                            <Text mt={"xl"} ml={"xs"}>
+                                Open chores
+                            </Text>
                         ) : null}
                         {openChores.map((chore) => (
                             <CompletableChoreView
@@ -209,7 +214,9 @@ function ChoresView() {
                             />
                         ))}
                         {futureChores.length > 0 ? (
-                            <Text mt={"xl"}>Upcoming chores</Text>
+                            <Text mt={"xl"} ml={"xs"}>
+                                Upcoming chores
+                            </Text>
                         ) : null}
                         {futureChores.map((chore) => (
                             <CompletableChoreView
