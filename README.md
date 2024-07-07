@@ -10,6 +10,7 @@ The project is split into a [frontend](./frontend/), a [backend](./backend/) and
 * Clerk auth & upstash redis -> fill `.env` files based on `.env.sample` in `frontend` and `backend`
 * `docker compose up -d` to get local db running
 * `npm i --legacy-peer-deps` and `npm start` in `backend` and `frontend`
+* To quickly run everything at once you can also run `./run_all.sh`
 
 ## How to deploy
 * Get a cloud database (eg. [neon](https://neon.tech)) and add it's connection url to `./backend/.env` under `DATABASE_URL`
