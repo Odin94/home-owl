@@ -69,7 +69,16 @@ const CreateHomeWizard = () => {
                     </Text>
 
                     {!isPosting ? (
-                        <Button onClick={() => mutate()} className="">
+                        <Button
+                            onClick={() => mutate()}
+                            className=""
+                            variant="gradient"
+                            gradient={{
+                                from: "teal",
+                                to: "lime",
+                                deg: 60,
+                            }}
+                        >
                             Create Home
                         </Button>
                     ) : (
@@ -157,6 +166,15 @@ function HomeView() {
     } = useQuery({
         queryKey: ["myHome"],
         queryFn: fetchGetMyHome,
+        retry: (failureCount, error: any) => {
+            if (
+                error?.message?.includes("NOT FOUND") ||
+                error?.message?.includes("404")
+            ) {
+                return false
+            }
+            return failureCount < 3
+        },
     })
 
     if (isHomeLoading || !isUserLoaded)

@@ -34,19 +34,43 @@ const doFetch = async (
           }
     const response = await fetch(`${basePath}${path}`, opts)
     if (!response.ok) {
-        throw new Error(
-            "Network response was not ok " + response.statusText.toUpperCase(),
-        )
+        let errorMessage = response.statusText.toUpperCase()
+        try {
+            const errorBody = await response.text()
+            if (errorBody) {
+                errorMessage = errorBody
+            }
+        } catch {
+            // If we can't read the body, use the status text
+        }
+        const error = new Error("Network response was not ok " + errorMessage)
+        ;(error as any).status = response.status
+        throw error
     }
     return response.json()
 }
 
 // Homes
 
-export const fetchGetMyHome = async (): Promise<HomeWithUsers> => {
-    const response = await doFetch("/homes/me", "GET")
-    const myHome = HomeWithUsersModel.parse(response)
+export const fetchGetMyHome = async (): Promise<HomeWithUsers | null> => {
+    const basePath = getConfigs().VITE_BASE_URL
+    const response = await fetch(`${basePath}/homes/me`, {
+        method: "GET",
+        credentials: "include",
+    })
 
+    if (response.status === 404) {
+        return null
+    }
+
+    if (!response.ok) {
+        throw new Error(
+            "Network response was not ok " + response.statusText.toUpperCase(),
+        )
+    }
+
+    const data = await response.json()
+    const myHome = HomeWithUsersModel.parse(data)
     return myHome
 }
 

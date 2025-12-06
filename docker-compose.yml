@@ -1,8 +1,6 @@
-version: "3.8"
-
 services:
     homeowl_postgres:
-        image: postgres:16
+        image: postgres:18
         environment:
             POSTGRES_USER: odini
             POSTGRES_PASSWORD: swimming_in_the_sunshine_well

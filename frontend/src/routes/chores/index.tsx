@@ -23,7 +23,7 @@ import { createFileRoute, useNavigate, Link } from "@tanstack/react-router"
 import { Chore } from "~/utils/types"
 import { useQuery, useQueryClient } from "@tanstack/react-query"
 import { fetchGetMyChores } from "~/utils/queries"
-import { useEffect, useState } from "react"
+import { useEffect } from "react"
 
 dayjs.extend(localeData)
 dayjs.extend(weekday)
@@ -146,6 +146,13 @@ function ChoresView() {
     } = useQuery({
         queryFn: fetchGetMyChores,
         queryKey: ["chores"],
+        retry: (failureCount, error: any) => {
+            if (error?.status >= 400 && error?.status < 500) {
+                return false
+            }
+
+            return failureCount < 3
+        },
     })
 
     if (isChoresLoading)
@@ -159,6 +166,43 @@ function ChoresView() {
     if (error?.message?.includes("UNAUTHORIZED")) {
         console.log("Not logged in, navigating to /")
         navigate({ to: "/" })
+        return
+    }
+    if (
+        error?.message?.includes("BAD_REQUEST") ||
+        error?.message?.includes("400") ||
+        error?.message?.includes("doesn't belong to a home")
+    ) {
+        if (error.message.includes("doesn't belong to a home")) {
+            console.error("User doesn't belong to a home:", error)
+            return (
+                <PageLayout>
+                    <LoginHeader />
+                    <Center h={"40%"} ta={"center"}>
+                        <Stack gap="md">
+                            <Text fz={"xl"}>
+                                You need to create or join a home first.
+                            </Text>
+                            <Text c={"gray"}>
+                                Create a home to start tracking chores!
+                            </Text>
+                            <Link to={"/home"}>
+                                <Button
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "teal",
+                                        to: "lime",
+                                        deg: 60,
+                                    }}
+                                >
+                                    Go to Home
+                                </Button>
+                            </Link>
+                        </Stack>
+                    </Center>
+                </PageLayout>
+            )
+        }
     }
     if (error)
         return (

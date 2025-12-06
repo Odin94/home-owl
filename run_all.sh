@@ -6,8 +6,8 @@ docker compose up -d
 
 echo "Starting backend..."
 cd backend
-npm start &
+npm run dev &
 
 echo "Starting frontend..."
 cd ../frontend
-npm start
+npm run dev

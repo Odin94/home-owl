@@ -9,7 +9,8 @@ The project is split into a [frontend](./frontend/), a [backend](./backend/) and
 ## How to run
 * Clerk auth & upstash redis -> fill `.env` files based on `.env.sample` in `frontend` and `backend`
 * `docker compose up -d` to get local db running
-* `npm i --legacy-peer-deps` and `npm start` in `backend` and `frontend`
+* `cd backend && npx prisma generate && npx prisma push && cd ..` to initialize database
+* `npm i --legacy-peer-deps` and `npm run dev` in `backend` and `frontend`
 * To quickly run everything at once you can also run `./run_all.sh`
 
 ## How to deploy
@@ -35,6 +36,7 @@ The project is split into a [frontend](./frontend/), a [backend](./backend/) and
 
 <!--
 TODOs:
+* Consider rebranding to "FourArms" (jellyfish + 2 people sharing chores)
 * Make page pretty on mobile
 * Make skipping chores snappier (remove delay from update function, but only for skipping)
 * Add an export-all-data button

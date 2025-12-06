@@ -1,5 +1,6 @@
 import {
     Button,
+    Center,
     CloseButton,
     Collapse,
     Grid,
@@ -13,7 +14,7 @@ import {
 import { useDisclosure } from "@mantine/hooks"
 import { modals } from "@mantine/modals"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { createFileRoute, useNavigate } from "@tanstack/react-router"
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router"
 import dayjs from "dayjs"
 import relativeTime from "dayjs/plugin/relativeTime"
 import { motion } from "framer-motion"
@@ -46,6 +47,13 @@ function UsersView() {
     } = useQuery({
         queryFn: fetchGetUsersWithChoreCompletionsInMyHome,
         queryKey: ["usersInMyHome"],
+        retry: (failureCount, error: any) => {
+            if (error?.status >= 400 && error?.status < 500) {
+                return false
+            }
+
+            return failureCount < 3
+        },
     })
 
     if (isPending)
@@ -59,6 +67,48 @@ function UsersView() {
         console.log("Not logged in, navigating to /")
         navigate({ to: "/" })
         return
+    }
+    if (
+        error?.message?.includes("BAD_REQUEST") ||
+        error?.message?.includes("400") ||
+        error?.message?.includes(
+            "You need to belong to a home to complete chores",
+        )
+    ) {
+        if (
+            error.message.includes(
+                "You need to belong to a home to complete chores",
+            )
+        ) {
+            console.error("User doesn't belong to a home:", error)
+            return (
+                <PageLayout>
+                    <LoginHeader />
+                    <Center h={"40%"} ta={"center"}>
+                        <Stack gap="md">
+                            <Text fz={"xl"}>
+                                You need to create or join a home first.
+                            </Text>
+                            <Text c={"gray"}>
+                                Create a home to start tracking chores!
+                            </Text>
+                            <Link to={"/home"}>
+                                <Button
+                                    variant="gradient"
+                                    gradient={{
+                                        from: "teal",
+                                        to: "lime",
+                                        deg: 60,
+                                    }}
+                                >
+                                    Go to Home
+                                </Button>
+                            </Link>
+                        </Stack>
+                    </Center>
+                </PageLayout>
+            )
+        }
     }
     if (!usersWithChoreCompletions) {
         console.log(error)
